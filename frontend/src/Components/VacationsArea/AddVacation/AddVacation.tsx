@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
 import VacationModel from "../../../Models/VacationModel";
 import authService from "../../../Services/AuthService";
+import notifyService from "../../../Services/NotifyService";
 import vacationsService from "../../../Services/VacationService";
 import "./AddVacation.css";
 
@@ -12,7 +13,7 @@ function AddVacation(): JSX.Element {
 
     useEffect(() => {
         if (!authService.isLoggedIn()) {
-            alert("You are not logged in");
+            notifyService.error("You are not logged in");
             navigate("/login");
         }
     }, []);
@@ -22,11 +23,11 @@ function AddVacation(): JSX.Element {
     async function submit(vacation: VacationModel) {
         try {
             const addedVacation = await vacationsService.addVacation(vacation);
-            alert(`Vacation ${addedVacation.vacationName} was added`);
+            notifyService.success(`Vacation ${addedVacation.vacationName} was added`);
             navigate("/vacations");
         }
         catch (err: any) {
-            alert(err.message);
+            notifyService.error(err.message);
         }
     }
 

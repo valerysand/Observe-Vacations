@@ -20,6 +20,7 @@ import { deleteVacationAction } from '../../../Redux/VacationsState';
 import authService from '../../../Services/AuthService';
 import UserModel from '../../../Models/UserModel';
 import { createTheme } from '@mui/material';
+import notifyService from '../../../Services/NotifyService';
 
 
 
@@ -50,19 +51,17 @@ export default function VacationCard(props: VacationCardProps) {
         try {
             if (!follow) {
                 await followService.addFollow(user.userId, props.vacation.vacationId);
-                alert(`${props.vacation.vacationId} has been liked`);
                 setFollow(true);
             }
             else {
                 console.log(user);
                 await followService.removeFollow(user.userId, props.vacation.vacationId);
-                alert(`${props.vacation.vacationId} has been disliked`);
                 setFollow(false);
             }
 
         }
         catch (err: any) {
-            alert(err.message);
+            notifyService.error(err.message);
         }
     }
 

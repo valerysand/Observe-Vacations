@@ -2,7 +2,6 @@ import "./LoginPage.css";
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -12,6 +11,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import CredentialModel from "../../../Models/CredentialModel";
 import authService from "../../../Services/AuthService";
 import { useForm } from "react-hook-form";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import notifyService from "../../../Services/NotifyService";
 
 
@@ -27,12 +28,12 @@ export default function SignIn() {
     async function submit(credentials: CredentialModel) {
         try {
             await authService.login(credentials);
-            alert("You are logged in");
+            notifyService.success("You are logged in");
             navigator("/home");
 
         }
         catch (err: any) {
-            alert(err.message);
+            notifyService.error(err.message);
         }
 
     }
@@ -88,12 +89,13 @@ export default function SignIn() {
                         </Button>
                         <Grid container>
                             <Grid item>
-                                    <NavLink to="/register">{"Don't have an account? Sign Up"}</NavLink>
+                                <NavLink to="/register">{"Don't have an account? Sign Up"}</NavLink>
                             </Grid>
                         </Grid>
                     </Box>
                 </Box>
             </Container>
+            
         </ThemeProvider>
     );
 }

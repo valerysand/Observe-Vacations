@@ -4,7 +4,6 @@ import { NavLink } from "react-router-dom";
 import { Unsubscribe } from "redux";
 import UserModel from "../../../Models/UserModel";
 import { authStore } from "../../../Redux/Store";
-import "./AuthMenu.css";
 
 interface AuthMenuState {
     user: UserModel;
@@ -13,7 +12,6 @@ interface AuthMenuState {
 class AuthMenu extends Component<{}, AuthMenuState> {
     
     private unsubscribeMe: Unsubscribe;
-    private navigator: Navigator;
 
     public componentDidMount() {
 

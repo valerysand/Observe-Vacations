@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import VacationModel from "../../../Models/VacationModel";
+import notifyService from "../../../Services/NotifyService";
 import vacationsService from "../../../Services/VacationService";
 import "./UpdateVacation.css";
 
@@ -15,11 +16,11 @@ function UpdateVacation(): JSX.Element {
         try {
             vacation.vacationId = id;
             await vacationsService.updateVacation(vacation);
-            alert("Vacation updated by Admin");
+            notifyService.success("Vacation updated by Admin");
             navigate("/vacations");
         }
         catch (err: any) {
-            alert(err.message);
+            notifyService.error(err.message);
         }
     }
 

@@ -10,9 +10,9 @@ import vacationsService from "../../../Services/VacationService";
 import Loading from "../../SharedArea/Loading/Loading";
 import VacationCard from "../VacationCard/VacationCard";
 import "./VacationsList.css";
-import { experimentalStyled as styled } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
 import { Grid } from "@mui/material";
+import notifyService from "../../../Services/NotifyService";
+
 
 interface VacationsListState {
     vacations: VacationModel[];
@@ -40,7 +40,7 @@ class VacationsList extends Component<{}, VacationsListState> {
 
         }
         catch (err: any) {
-            alert(err.message)
+            notifyService.error(err.message)
 
         }
     }

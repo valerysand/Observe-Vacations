@@ -1,8 +1,10 @@
 import { Notyf } from "notyf";
+import 'notyf/notyf.min.css'; // for React, Vue and Svelte
+
 
 class NotifyService {
 
-    private notification = new Notyf({ duration: 4000, position: { x: "center", y: "top" } });
+    private notification = new Notyf({ duration: 3000, dismissible: true , position: { x: "left", y: "bottom" } });
 
     public success(message: string): void {
         this.notification.success(message);

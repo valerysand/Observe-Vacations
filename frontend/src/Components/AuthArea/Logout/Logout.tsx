@@ -8,10 +8,8 @@ function Logout(): JSX.Element {
     const navigator = useNavigate();
 
     useEffect(() => {
-        console.log("logout");
-        
         authService.logout();
-        alert("Logout success");
+        notifyService.success("Logout success");
         navigator("/home");
 
     }, []);
