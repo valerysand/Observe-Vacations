@@ -5,18 +5,19 @@ import config from "../Utils/Config";
 class FollowService {
 
     // Follow vacation
-    public async follow(follow: FollowModel): Promise<FollowModel> {
-        const response = await axios.post<FollowModel>(config.urls.followVacation, follow);
+    public async addFollow(userId: number, vacationId: number): Promise<FollowModel> {
+        const response = await axios.post<FollowModel>(config.urls.addFollow, {userId, vacationId});
         const followedVacation = response.data;
         return followedVacation;
 
     }
 
-    public async unfollow(userId: number, vacationId: number): Promise<void> {
-      await axios.delete<FollowModel>(config.urls.unfollowVacation + { userId, vacationId });
+    // Unfollow vacation
+    public async removeFollow(userId: number, vacationId: number): Promise<void> {
+        const response = await axios.post(config.urls.removeFollow, {userId, vacationId});
+        const removeFollow = response.data;
+        return removeFollow;
     }
-
-
 }
 
 

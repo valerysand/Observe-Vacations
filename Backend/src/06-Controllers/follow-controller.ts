@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
 import FollowVacation from "../03-Models/followVacation-model";
-import dal from "../04-DAL/dal";
 import logic from "../05-BLL/follow-logics";
 
 
@@ -9,12 +8,13 @@ const router = express.Router();
 
 
 // Follow vacation router
-router.post("/", async (request: Request, response: Response, next: NextFunction) => {
+router.post("/add", async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const vacation = new FollowVacation(request.body);
-        console.log(vacation);
-
-        const followedVacation = await logic.addFollowVacation(vacation);
+        const vacationId = +request.params.id;
+        request.body.id = vacationId;
+        const follow = new FollowVacation(request.body);
+        console.log(follow);
+        const followedVacation = await logic.addFollow(follow);
         response.status(201).json(followedVacation);
     }
     catch (err: any) {
@@ -23,11 +23,13 @@ router.post("/", async (request: Request, response: Response, next: NextFunction
 });
 
 // Delete follow from vacations
-router.delete("/delete", async (request: Request, response: Response, next: NextFunction) => {
+router.post("/remove", async (request: Request, response: Response, next: NextFunction) => {
     try {
+        const vacationId = +request.params.id;
+        request.body.id = vacationId;
         const vacation = new FollowVacation(request.body);
-        await logic.unfollowVacation(vacation);
-        response.status(201).json("Unfollow from vacation");
+        const removeFollow = await logic.removeFollow(vacation);
+        response.status(201).json(removeFollow);
 
     }
     catch (err: any) {

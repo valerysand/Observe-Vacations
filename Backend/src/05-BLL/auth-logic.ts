@@ -26,7 +26,7 @@ async function register(user: UserModel): Promise<string> {
     // Add to database
     const sql = `INSERT INTO users VALUES(DEFAULT, '${user.firstName}', '${user.lastName}', '${user.username}', '${user.password}' , ${user.role = Role.User})`;
     const info: OkPacket = await dal.execute(sql);
-    user.id = info.insertId;
+    user.userId = info.insertId;
     // user.role = Role.User;
     delete user.password;
     const token = jwt.getNewToken(user);

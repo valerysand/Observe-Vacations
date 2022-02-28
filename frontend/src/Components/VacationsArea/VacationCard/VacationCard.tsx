@@ -14,12 +14,12 @@ import config from '../../../Utils/Config';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import vacationsStore, { authStore } from '../../../Redux/Store';
-import { Unsubscribe } from 'redux';
 import FollowModel from '../../../Models/FollowModel';
 import followService from '../../../Services/FollowService';
 import vacationsService from '../../../Services/VacationService';
 import { deleteVacationAction } from '../../../Redux/VacationsState';
 import authService from '../../../Services/AuthService';
+import UserModel from '../../../Models/UserModel';
 
 
 
@@ -28,20 +28,43 @@ interface VacationCardProps {
 }
 
 
-export default function VacationaCard(props: VacationCardProps) {
+export default function VacationCard(props: VacationCardProps) {
 
     const navigator = useNavigate();
     const [follow, setFollow] = useState<boolean>(false);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const [user, setUser] = useState<UserModel>();
 
     useEffect(() => {
         const isAdmin = authService.isAdmin();
         setIsAdmin(isAdmin);
     }, []);
 
-    function handleFollow() {
-        setFollow(!follow);
+    useEffect(() => {
+        const user = authStore.getState().user;
+        setUser(user);
+    }, []);
+    async function handleFollow() {
+        try {
+            if (!follow) {
+                await followService.addFollow(user.userId, props.vacation.vacationId);
+                alert(`${props.vacation.vacationId} has been liked`);
+                setFollow(true);
+            }
+            else {
+                console.log(user);
+                await followService.removeFollow(user.userId, props.vacation.vacationId);
+                alert(`${props.vacation.vacationId} has been disliked`);
+                setFollow(false);
+            }
+
+        }
+        catch (err: any) {
+            alert(err.message);
+        }
     }
+
+
 
     async function handleDelete(id: number) {
         try {
@@ -70,22 +93,22 @@ export default function VacationaCard(props: VacationCardProps) {
                     Price: {props.vacation.vacationPrice}$
                 </Typography>
             </CardContent>
-            {!isAdmin ? 
-            <CardActions disableSpacing>
-                <IconButton aria-label="add to favorites" >
-                     <FavoriteIcon /> 
-                </IconButton>
-            </CardActions> 
-            :
-            <CardActions disableSpacing>
-                <IconButton aria-label="edit" onClick={() => {navigator("/update-vacation/" + props.vacation.vacationId)}}>
-                    <EditIcon />
-                </IconButton>
-                <IconButton onClick={() => {handleDelete(props.vacation.vacationId)}}>
-                    <ClearIcon  />
-                </IconButton>
-            </CardActions>
-            }       
+            {!isAdmin ?
+                <CardActions disableSpacing>
+                    <IconButton aria-label="add to favorites" onClick={handleFollow}>
+                        {follow ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                    </IconButton>
+                </CardActions>
+                :
+                <CardActions disableSpacing>
+                    <IconButton aria-label="edit" onClick={() => { navigator("/update-vacation/" + props.vacation.vacationId) }}>
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => { handleDelete(props.vacation.vacationId) }}>
+                        <ClearIcon />
+                    </IconButton>
+                </CardActions>
+            }
         </Card>
     );
 }

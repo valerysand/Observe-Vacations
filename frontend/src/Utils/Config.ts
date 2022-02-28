@@ -4,8 +4,8 @@ abstract class Config {
         vacationsImages: "",
         register: "",
         login: "",
-        followVacation: "",
-        unfollowVacation: "",
+        addFollow: "",
+        removeFollow: "",
         socketServer: ""
     }
 
@@ -15,8 +15,8 @@ abstract class Config {
             vacationsImages: baseUrl + "vacations/images/",
             register: baseUrl + "auth/register/",
             login: baseUrl + "auth/login/",
-            followVacation: baseUrl + "vacations/follows/",
-            unfollowVacation: baseUrl + "vacations/follows/delete/",
+            addFollow: baseUrl + "follows/add",
+            removeFollow: baseUrl + "follows/remove",
             socketServer: "http://localhost:3001"
         }
     }

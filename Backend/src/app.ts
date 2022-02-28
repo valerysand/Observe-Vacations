@@ -23,7 +23,7 @@ expressServer.use(express.json());
 // use controllers:
 expressServer.use("/api/auth", authController);
 expressServer.use("/api/vacations", vacationsController);
-expressServer.use("/api/vacations/follows", followsController);
+expressServer.use("/api/follows", followsController);
 
 expressServer.use("*", (request: Request, response: Response, next: NextFunction) => {
     const error = new ClientError(404, "Route not found");
