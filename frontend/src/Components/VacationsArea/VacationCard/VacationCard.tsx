@@ -14,12 +14,12 @@ import config from '../../../Utils/Config';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import vacationsStore, { authStore } from '../../../Redux/Store';
-import FollowModel from '../../../Models/FollowModel';
 import followService from '../../../Services/FollowService';
 import vacationsService from '../../../Services/VacationService';
 import { deleteVacationAction } from '../../../Redux/VacationsState';
 import authService from '../../../Services/AuthService';
 import UserModel from '../../../Models/UserModel';
+import { createTheme } from '@mui/material';
 
 
 
@@ -27,6 +27,8 @@ interface VacationCardProps {
     vacation: VacationModel;
 }
 
+// MUI Theme
+const theme = createTheme();
 
 export default function VacationCard(props: VacationCardProps) {
 
@@ -78,17 +80,24 @@ export default function VacationCard(props: VacationCardProps) {
     }
 
     return (
-        <Card sx={{ maxWidth: 445 }} >
-            <CardHeader
-                title={props.vacation.vacationName}
-            />
+        <Card sx={{
+            maxWidth: 445,
+            maxHeight: 420,
+            height: 380,
+            borderRadius: 3,
+            background: "rgba(255, 255, 255, 0.8)",
+
+        }} >
             <CardMedia
                 component="img"
-                height="194"
+                height="250"
                 image={config.urls.vacationsImages + props.vacation.vacationImage}
                 alt={props.vacation.vacationName}
             />
             <CardContent>
+                <Typography variant="body1" color="dark">
+                     {props.vacation.vacationName}
+                </Typography>
                 <Typography variant="body2" color="text.secondary">
                     Price: {props.vacation.vacationPrice}$
                 </Typography>

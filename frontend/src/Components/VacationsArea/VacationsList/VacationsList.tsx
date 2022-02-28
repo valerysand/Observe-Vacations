@@ -1,9 +1,8 @@
 import { Component } from "react";
-import { Col, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { Row } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { Unsubscribe } from "redux";
-import UserModel from "../../../Models/UserModel";
 import VacationModel from "../../../Models/VacationModel";
 import vacationsStore, { authStore } from "../../../Redux/Store";
 import authService from "../../../Services/AuthService";
@@ -11,22 +10,14 @@ import vacationsService from "../../../Services/VacationService";
 import Loading from "../../SharedArea/Loading/Loading";
 import VacationCard from "../VacationCard/VacationCard";
 import "./VacationsList.css";
-import * as React from 'react';
 import { experimentalStyled as styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
+import { Grid } from "@mui/material";
 
 interface VacationsListState {
     vacations: VacationModel[];
     isAdmin: boolean;
 }
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(2),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-}));
 
 class VacationsList extends Component<{}, VacationsListState> {
 
@@ -41,7 +32,7 @@ class VacationsList extends Component<{}, VacationsListState> {
                 const vacations = await vacationsService.getAllVacations();
                 this.setState({ vacations });
             });
-            
+
             this.setState({ isAdmin: authService.isAdmin() });
             this.unsubscribeMe = authStore.subscribe(() => {
                 this.setState({ isAdmin: authService.isAdmin() });
@@ -66,14 +57,13 @@ class VacationsList extends Component<{}, VacationsListState> {
                 {this.state?.vacations === undefined && <Loading />}
 
                 {this.state?.isAdmin ? <NavLink to="/vacations/new">New Vacation</NavLink> : null}
-                <Container fluid >
-                    <Row >
-                        {this.state?.vacations?.map(v =>
+                <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                    {this.state?.vacations?.map(v =>
+                        <Grid item xs={2} sm={4} md={3} key={v.vacationId}>
                             <VacationCard key={v.vacationName} vacation={v} />
-                        )}
-                    </Row>
-
-                </Container>
+                        </Grid>
+                    )}
+                </Grid>
             </div>
         );
     }
