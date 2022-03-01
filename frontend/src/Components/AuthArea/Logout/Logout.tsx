@@ -10,7 +10,7 @@ function Logout(): JSX.Element {
     useEffect(() => {
         authService.logout();
         notifyService.success("Logout success");
-        navigator("/home");
+        navigator("/login");
 
     }, []);
 

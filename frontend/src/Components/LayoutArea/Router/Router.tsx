@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { Unsubscribe } from "redux";
+import Role from "../../../Models/Role";
 import { authStore } from "../../../Redux/Store";
 import authService from "../../../Services/AuthService";
 import SignIn from "../../AuthArea/LoginPage/LoginPage";
@@ -13,29 +15,46 @@ import Page404 from "../Page404/Page404";
 
 function Router(): JSX.Element {
 
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-    const [isAdmin,setIsAdmin] = useState<boolean>(false);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+    const [isAdmin, setIsAdmin] = useState<boolean>(true);
+
+    const unsubscribeMe: Unsubscribe = authStore.subscribe(() => {
+        
+        const user = authStore.getState().user;
+        if (!user) {
+            setIsLoggedIn(false);
+            setIsAdmin(false);
+        } else {
+            setIsLoggedIn(true);
+            const role = user?.role;
+            if (role === Role.Admin) setIsAdmin(true);
+            if (role !== Role.Admin) setIsAdmin(false);
+        }
+    });
 
     useEffect(() => {
-        const unsubscribeMe = authStore.subscribe(() => {
-            setIsLoggedIn(authService.isLoggedIn());
-        });
-        return () => unsubscribeMe();
+
+        let user = authStore.getState().user;
+        if (!user) {
+            setIsLoggedIn(false);
+            setIsAdmin(false);
+        } else {
+            const role = user?.role;
+            if (role !== Role.Admin) setIsAdmin(false);
+        }
     }, []);
 
-    useEffect(() => {
-        const isAdmin = authService.isAdmin();
-        setIsAdmin(isAdmin); 
-    },[]);
-
+    useEffect( () => {
+        return () => {
+            unsubscribeMe();   
+        };
+    },  []);
 
     return (
         <div className="Router">
             <Routes>
-                {/* Route by default */}
-                <Route path="/" element={<Navigate replace to="/home" />} />
-                {/* Page not found route - must be last route: */}
                 <Route path="*" element={<Page404 />} />
+                <Route path="/home" element={isLoggedIn ? <VacationsList /> : <Navigate to="/login" />} />
 
                 {/* Auth Routes */}
                 <Route path="/register" element={<SignUp />} />
@@ -43,11 +62,9 @@ function Router(): JSX.Element {
                 <Route path="/logout" element={<Logout />} />
 
                 {/* Vacations Routes */}
-                <Route path="/home" element={isLoggedIn ? <VacationsList /> : <Navigate to="/login" />} />
-
-                <Route path="/vacations" element={<VacationsList />} />
-                <Route path="/vacations/new" element={isAdmin ? <AddVacation /> : <Navigate to="*" /> }/>
+                <Route path="/add-vacation" element={isAdmin ? <AddVacation /> : <Navigate to="*" />} />
                 <Route path="/update-vacation/:id" element={isAdmin ? <UpdateVacation /> : <Navigate to="*" />} />
+                <Route path="/" element={<Navigate replace to="/home" />} />
             </Routes>
         </div>
     );

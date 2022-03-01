@@ -111,7 +111,7 @@ export default function SignUp() {
                         >
                             Sign Up
                         </Button>
-                        <Grid container justifyContent="flex-end">
+                        <Grid container >
                             <Grid item>
                                     <NavLink to="/login"> Already have an account? Sign in</NavLink>
                             </Grid>

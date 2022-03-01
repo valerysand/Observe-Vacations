@@ -3,11 +3,14 @@ import VacationModel from "../Models/VacationModel";
 // Vacations AppState 
 export class VacationsState {
     public vacations: VacationModel[] = [];
+    public followedVacations: VacationModel[] = [];
+
 }
 
 // Vacations ActionType
 export enum VacationsActionType {
     FetchVacations = "FetchVacations",
+    FetchFollowedVacations = "FetchFollowedVacations",
     AddVacation = "AddVacation",
     UpdateVacation = "UpdateVacation",
     DeleteVacation = "DeleteVacation"
@@ -22,6 +25,10 @@ export interface VacationsAction {
 // Vacations Action Creators
 export function fetchVacationsAction(vacations: VacationModel[]): VacationsAction {
     return { type: VacationsActionType.FetchVacations, payload: vacations };
+}
+
+export function fetchFollowedVacationsAction(followedVacations: VacationModel[]): VacationsAction {
+    return { type: VacationsActionType.FetchFollowedVacations, payload: followedVacations };
 }
 
 export function addVacationAction(vacationToAdd: VacationModel): VacationsAction {
@@ -45,6 +52,10 @@ export function vacationsReducer(currentVacationsState: VacationsState = new Vac
     switch (action.type) {
         case VacationsActionType.FetchVacations:
             newVacationsState.vacations = action.payload;
+            break;
+
+        case VacationsActionType.FetchFollowedVacations:
+            newVacationsState.followedVacations = action.payload;
             break;
 
         case VacationsActionType.AddVacation:

@@ -1,22 +1,25 @@
 import { OkPacket } from "mysql";
+import { v4 as uuid } from "uuid";
 import ClientError from "../03-Models/client-error";
 import FollowVacation from "../03-Models/followVacation-model";
 import UserModel from "../03-Models/user-model";
 import VacationModel from "../03-Models/vacation-model";
 import dal from "../04-DAL/dal";
 import jwt from "../01-Utils/jwt";
-import handleImages from "../01-Utils/handle-images";
 import socketLogic from "./socket-logic";
+import safeDelete from "../01-Utils/safe-delete";
 
 // Get all vacations from database
 async function getAllVacations(): Promise<VacationModel[]> {
-    const sql = "SELECT * FROM vacations";
+    const sql = `SELECT vacationId, vacationName, 
+                DATE_FORMAT(fromDate, "%d-%m-%Y") AS fromDate, 
+                DATE_FORMAT(toDate, "%d-%m-%Y") AS toDate, vacationDescription, vacationImage, followers, vacationPrice from Vacations`;
     const vacations = await dal.execute(sql);
     return vacations;
 }
 // Get one vacation from database
 async function getOneVacation(id: number): Promise<VacationModel> {
-    const sql = "SELECT VacationId AS id, vacationName AS name, vacationDescription AS description, vacationImage AS imageName, fromDate AS fromDate, toDate AS toDate, vacationPrice AS price FROM vacations WHERE vacationId = " + id;
+    const sql = "SELECT * FROM vacations WHERE vacationId = " + id;
     const vacations = await dal.execute(sql);
     const vacation = vacations[0];
     if (!vacation) {
@@ -33,13 +36,22 @@ async function addVacation(vacation: VacationModel): Promise<VacationModel> {
         throw new ClientError(400, errors);
     }
 
-    handleImages.saveImageToDb(vacation);
-    delete vacation.image;
+    // 1. Take the original extension (tiff, jpg, jpeg, gif, png, bmp, ....... ): 
+    const extension = vacation.image.name.substr(vacation.image.name.lastIndexOf(".")); // ".jpg" / ".png" / ".gif"
+
+    // 2. Create uuid file name including the original extension: 
+    vacation.vacationImage = uuid() + extension;
 
     const sql = `INSERT INTO vacations(vacationName, vacationDescription, vacationImage, fromDate, toDate, vacationPrice)
     VALUES('${vacation.vacationName}', '${vacation.vacationDescription}', '${vacation.vacationImage}', '${vacation.fromDate}', '${vacation.toDate}', ${vacation.vacationPrice})`;
     const info: OkPacket = await dal.execute(sql);
     vacation.vacationId = info.insertId;
+    // 3. Save the image to the disk:
+    await vacation.image.mv("./src/Assets/Images/Vacations/" + vacation.vacationImage);
+
+    // 4. Delete the image from the model so it won't get back to user:
+    delete vacation.image;
+
     socketLogic.emitAddVacation(vacation);
     return vacation;
 }
@@ -51,12 +63,25 @@ async function updateFullVacation(vacation: VacationModel): Promise<VacationMode
     if (errors) {
         throw new ClientError(400, errors);
     }
-    // const oldImage = await getOneVacation(vacation.id);
-    // if (oldImage.imageName) {
-    //     handleImages.deleteImageFromDb("./src/00-Images/" + oldImage.name + "/" + oldImage.imageName)
-    // }
-    handleImages.saveImageToDb(vacation);
-    delete vacation.image;
+
+    const dbVacation = await getOneVacation(vacation.vacationId);
+    for (const prop in vacation) {
+        if (vacation[prop] === undefined) {
+            vacation[prop] = dbVacation[prop]
+        }
+    }
+    // if user sent an image
+    if (vacation.image !== undefined) {
+        // take the original extension (tiff, jpg.jpeg, gif, png, bmp...):
+        const extension = vacation.image.name.substring(vacation.image.name.lastIndexOf(".")); //".jpg" etc.
+        // create uuid file name
+        vacation.vacationImage = uuid() + extension;
+
+        await vacation.image.mv("./src/Assets/Images/Vacations/" + vacation.vacationImage);
+        safeDelete("./src/Assets/Images/Vacations/" + dbVacation.vacationName); // delete the old image from disk
+
+        delete vacation.image;
+    }
 
     const sql = `UPDATE vacations SET
                 vacationName = '${vacation.vacationName}',
@@ -71,29 +96,6 @@ async function updateFullVacation(vacation: VacationModel): Promise<VacationMode
     return vacation;
 }
 
-// Update partial vacation
-async function updatePartialVacation(vacation: VacationModel): Promise<VacationModel> {
-    // Validate PATCH:
-    const errors = vacation.validatePatch();
-    if (errors) {
-        throw new ClientError(400, errors);
-    }
-    const dbVacation = await getOneVacation(vacation.vacationId);
-    // if(!dbVacation) {
-    //     throw new ClientError(400, `id ${vacation.id} not found`);
-    // }
-
-    // Update it only with the given values from frontend:
-    for (const prop in vacation) {
-        if (vacation[prop] !== undefined) {
-            dbVacation[prop] = vacation[prop];
-        }
-    }
-    // Update to database:
-    vacation = await updateFullVacation(dbVacation);
-    socketLogic.emitUpdateVacation(vacation);
-    return vacation;
-}
 
 // Delete vacation from database:
 async function deleteVacation(id: number): Promise<void> {
@@ -108,16 +110,13 @@ async function deleteVacation(id: number): Promise<void> {
 }
 
 // Get all followed vacations:
-async function getAllFollowedVacations(): Promise<VacationModel[]> {
-    const sql = `(select *
-        from vacations v
-        join savedvacations s on v.vacationId = s.vacationId
-        where userId = 2)
-        union
-        (select *
-        from vacations v
-        join savedvacations s on v.vacationId = s.vacationId
-        where userId != 2);`;
+async function getAllFollowedVacations(userId: number): Promise<VacationModel[]> {
+    const sql = `SELECT Vacations.vacationId, vacationName,
+                    DATE_FORMAT(fromDate, "%Y-%m-%d") AS fromDate, 
+                    DATE_FORMAT(toDate, "%Y-%m-%d") AS toDate, vacationDescription, vacationName, followers, vacationPrice 
+                    FROM Vacations 
+                    JOIN savedVacations on Vacations.vacationId = savedVacations.vacationId 
+                    WHERE userId = ${userId}`;
     const allFollowedVacations = await dal.execute(sql);
     return allFollowedVacations;
 }
@@ -128,7 +127,6 @@ export default {
     getOneVacation,
     addVacation,
     updateFullVacation,
-    updatePartialVacation,
     deleteVacation,
     getAllFollowedVacations
 }

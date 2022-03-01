@@ -1,7 +1,7 @@
 import axios from "axios";
 import VacationModel from "../Models/VacationModel";
 import vacationsStore from "../Redux/Store";
-import { addVacationAction, deleteVacationAction, fetchVacationsAction } from "../Redux/VacationsState";
+import { addVacationAction, deleteVacationAction, fetchFollowedVacationsAction, fetchVacationsAction } from "../Redux/VacationsState";
 import config from "../Utils/Config";
 
 
@@ -17,6 +17,20 @@ class VacationService {
         else {
             const vacations = vacationsStore.getState().vacations;
             return vacations;
+        }
+    }
+
+    // Get all followed vacations:
+    public async getAllFollowedVacations(userId: number): Promise<VacationModel[]> {
+        if (vacationsStore.getState().followedVacations.length === 0) {
+            const response = await axios.get<VacationModel[]>(config.urls.followedVacations + userId);
+            const followedVacations = response.data;
+            vacationsStore.dispatch(fetchFollowedVacationsAction(followedVacations));
+            return followedVacations;            
+        }
+        else {
+            const followedVacations = vacationsStore.getState().followedVacations;
+            return followedVacations;
         }
     }
 

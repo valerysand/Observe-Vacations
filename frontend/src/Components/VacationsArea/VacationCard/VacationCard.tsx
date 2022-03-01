@@ -1,5 +1,5 @@
+
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
@@ -19,7 +19,7 @@ import vacationsService from '../../../Services/VacationService';
 import { deleteVacationAction } from '../../../Redux/VacationsState';
 import authService from '../../../Services/AuthService';
 import UserModel from '../../../Models/UserModel';
-import { createTheme } from '@mui/material';
+import { CardHeader, createTheme } from '@mui/material';
 import notifyService from '../../../Services/NotifyService';
 
 
@@ -34,7 +34,7 @@ const theme = createTheme();
 export default function VacationCard(props: VacationCardProps) {
 
     const navigator = useNavigate();
-    const [follow, setFollow] = useState<boolean>(false);
+    const [follow, setFollow] = useState<boolean>(props.vacation.isFollowed);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const [user, setUser] = useState<UserModel>();
 
@@ -47,16 +47,22 @@ export default function VacationCard(props: VacationCardProps) {
         const user = authStore.getState().user;
         setUser(user);
     }, []);
+
     async function handleFollow() {
         try {
             if (!follow) {
                 await followService.addFollow(user.userId, props.vacation.vacationId);
+                props.vacation.followers += 1;
+                props.vacation.isFollowed = true;
                 setFollow(true);
+                
             }
             else {
-                console.log(user);
                 await followService.removeFollow(user.userId, props.vacation.vacationId);
+                props.vacation.followers -= 1;
+                props.vacation.isFollowed = false;
                 setFollow(false);
+
             }
 
         }
@@ -82,14 +88,18 @@ export default function VacationCard(props: VacationCardProps) {
         <Card sx={{
             maxWidth: 445,
             maxHeight: 420,
-            height: 380,
+            height: 390,
             borderRadius: 3,
             background: "rgba(255, 255, 255, 0.8)",
 
         }} >
+            {isAdmin && 
+            <Typography variant="body1" color="dark">
+                     Follows: {props.vacation.followers}
+                </Typography>}
             <CardMedia
                 component="img"
-                height="250"
+                height="200"
                 image={config.urls.vacationsImages + props.vacation.vacationImage}
                 alt={props.vacation.vacationName}
             />
@@ -100,19 +110,27 @@ export default function VacationCard(props: VacationCardProps) {
                 <Typography variant="body2" color="text.secondary">
                     Price: {props.vacation.vacationPrice}$
                 </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    From: {props.vacation.fromDate }
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    To: {props.vacation.toDate }
+                </Typography>
             </CardContent>
             {!isAdmin ?
                 <CardActions disableSpacing>
                     <IconButton aria-label="add to favorites" onClick={handleFollow}>
                         {follow ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                        {props.vacation.followers}
+
                     </IconButton>
                 </CardActions>
                 :
                 <CardActions disableSpacing>
-                    <IconButton aria-label="edit" onClick={() => { navigator("/update-vacation/" + props.vacation.vacationId) }}>
+                    <IconButton aria-label="edit" onClick={() =>  navigator("/update-vacation/" + props.vacation?.vacationId) }>
                         <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => { handleDelete(props.vacation.vacationId) }}>
+                    <IconButton onClick={() => { handleDelete(props.vacation?.vacationId) }}>
                         <ClearIcon />
                     </IconButton>
                 </CardActions>

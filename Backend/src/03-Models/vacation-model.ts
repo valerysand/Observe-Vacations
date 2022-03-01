@@ -10,7 +10,9 @@ class VacationModel {
     public fromDate: string;
     public toDate: string;
     public vacationPrice: number;
+    public followers: number;
     public image: UploadedFile;
+    public isFollowed: boolean;
 
     public constructor(vacation: VacationModel) {
         this.vacationId = vacation.vacationId;
@@ -20,6 +22,7 @@ class VacationModel {
         this.fromDate = vacation.fromDate;
         this.toDate = vacation.toDate;
         this.vacationPrice = vacation.vacationPrice;
+        this.followers = vacation.followers;
         this.image = vacation.image;
     }
     // Joi validations:
@@ -32,18 +35,20 @@ class VacationModel {
         fromDate: Joi.string().required().min(4).max(100),
         toDate: Joi.string().required().min(4).max(100),
         vacationPrice: Joi.number().required(),
+        followers: Joi.forbidden(),
         image: Joi.object().required()
     });
 
     // Put Validation Schema
     private static putValidationSchema = Joi.object({
-        vacationId: Joi.required(),
+        vacationId: Joi.number().required().positive().integer(),
         vacationName: Joi.string().required().min(10).max(50),
         vacationDescription: Joi.string().required().min(20).max(500),
         vacationImage: Joi.forbidden(),
         fromDate: Joi.string().required().min(4).max(100),
         toDate: Joi.string().required().min(4).max(100),
         vacationPrice: Joi.number().required(),
+        followers: Joi.forbidden(),
         image: Joi.object().required()
 
     });
@@ -57,6 +62,7 @@ class VacationModel {
         fromDate: Joi.number().required().min(2022).max(new Date().getFullYear() + 2).integer(),
         toDate: Joi.number().required().min(2022).max(new Date().getFullYear() + 2).integer(),
         vacationPrice: Joi.number().required(),
+        followers: Joi.forbidden(),
         image: Joi.object().required()
 
     });

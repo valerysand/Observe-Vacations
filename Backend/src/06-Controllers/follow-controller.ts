@@ -10,10 +10,7 @@ const router = express.Router();
 // Follow vacation router
 router.post("/add", async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const vacationId = +request.params.id;
-        request.body.id = vacationId;
         const follow = new FollowVacation(request.body);
-        console.log(follow);
         const followedVacation = await logic.addFollow(follow);
         response.status(201).json(followedVacation);
     }
@@ -25,11 +22,9 @@ router.post("/add", async (request: Request, response: Response, next: NextFunct
 // Delete follow from vacations
 router.post("/remove", async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const vacationId = +request.params.id;
-        request.body.id = vacationId;
-        const vacation = new FollowVacation(request.body);
-        const removeFollow = await logic.removeFollow(vacation);
-        response.status(201).json(removeFollow);
+        const follower = new FollowVacation(request.body);
+        await logic.removeFollow(follower);
+        response.sendStatus(204);
 
     }
     catch (err: any) {

@@ -1,7 +1,4 @@
 import { Component } from "react";
-import { Container } from "react-bootstrap";
-import { Row } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
 import { Unsubscribe } from "redux";
 import VacationModel from "../../../Models/VacationModel";
 import vacationsStore, { authStore } from "../../../Redux/Store";
@@ -12,31 +9,40 @@ import VacationCard from "../VacationCard/VacationCard";
 import "./VacationsList.css";
 import { Grid } from "@mui/material";
 import notifyService from "../../../Services/NotifyService";
+import UserModel from "../../../Models/UserModel";
 
 
 interface VacationsListState {
-    vacations: VacationModel[];
-    isAdmin: boolean;
+    vacations: VacationModel[];   // vacations list
+    followedVacations: VacationModel[]; // vacations that the user is following
+    isAdmin: boolean; // is the user an admin
+    userId: number; // the user id
 }
 
 class VacationsList extends Component<{}, VacationsListState> {
 
-    private unsubscribeMe: Unsubscribe;
-
+    private unsubscribeMeFollowedVacations: Unsubscribe;
+    private unsubscribeMeVacations: Unsubscribe;
 
     public async componentDidMount() {
         try {
+            const userId = authService.getUserId();
+            const followedVacations = await vacationsService.getAllFollowedVacations(userId);
+            this.setState({ followedVacations });
+
+            this.unsubscribeMeFollowedVacations = vacationsStore.subscribe(async () => {
+                const followedVacations = await vacationsService.getAllFollowedVacations(userId);
+                this.setState({ followedVacations });
+            });
+
             const vacations = await vacationsService.getAllVacations();
             this.setState({ vacations });
-            this.unsubscribeMe = vacationsStore.subscribe(async () => {
+
+            this.unsubscribeMeVacations = vacationsStore.subscribe(async () => {
                 const vacations = await vacationsService.getAllVacations();
                 this.setState({ vacations });
             });
 
-            this.setState({ isAdmin: authService.isAdmin() });
-            this.unsubscribeMe = authStore.subscribe(() => {
-                this.setState({ isAdmin: authService.isAdmin() });
-            })
 
         }
         catch (err: any) {
@@ -46,7 +52,8 @@ class VacationsList extends Component<{}, VacationsListState> {
     }
 
     public componentWillUnmount(): void {
-        this.unsubscribeMe();
+        this.unsubscribeMeFollowedVacations();
+        this.unsubscribeMeVacations();
     }
 
     public render(): JSX.Element {
@@ -56,8 +63,12 @@ class VacationsList extends Component<{}, VacationsListState> {
 
                 {this.state?.vacations === undefined && <Loading />}
 
-                {this.state?.isAdmin ? <NavLink to="/vacations/new">New Vacation</NavLink> : null}
                 <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                {this.state?.followedVacations?.map(v =>
+                        <Grid item xs={2} sm={4} md={3} key={v.vacationId}>
+                            <VacationCard key={v.vacationName} vacation={v} />
+                        </Grid>
+                    )}
                     {this.state?.vacations?.map(v =>
                         <Grid item xs={2} sm={4} md={3} key={v.vacationId}>
                             <VacationCard key={v.vacationName} vacation={v} />

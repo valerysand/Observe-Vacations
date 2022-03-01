@@ -10,7 +10,7 @@ interface AuthMenuState {
 }
 
 class AuthMenu extends Component<{}, AuthMenuState> {
-    
+
     private unsubscribeMe: Unsubscribe;
 
     public componentDidMount() {
@@ -27,7 +27,6 @@ class AuthMenu extends Component<{}, AuthMenuState> {
     public render(): JSX.Element {
         return (
             <div className="AuthMenu">
-
                 {!this.state?.user &&
                     <>
                         <span>Hello Guest</span>
@@ -37,7 +36,6 @@ class AuthMenu extends Component<{}, AuthMenuState> {
 
                     </>
                 }
-
                 {this.state?.user &&
                     <>
                         <span>Hello {this.state.user.firstName + " " + this.state.user.lastName}</span>

@@ -24,7 +24,7 @@ function AddVacation(): JSX.Element {
         try {
             const addedVacation = await vacationsService.addVacation(vacation);
             notifyService.success(`Vacation ${addedVacation.vacationName} was added`);
-            navigate("/vacations");
+            navigate("/home");
         }
         catch (err: any) {
             notifyService.error(err.message);
@@ -88,7 +88,7 @@ function AddVacation(): JSX.Element {
 
                 <button>Add</button>
 
-                <button><NavLink to="/vacations">Back</NavLink></button>
+                <button ><NavLink to="/home">Back</NavLink></button>
 
             </form>
 

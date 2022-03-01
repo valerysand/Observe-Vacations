@@ -9,7 +9,17 @@ import Role from '../Models/Role';
 class AuthService {
 
     public isAdmin(): boolean {
-        return authStore.getState().user?.role === Role.Admin;
+        const user = authStore.getState().user;
+        if (user) {
+            const role = user.role;
+            if (role === Role.Admin) return true;
+            if (role === Role.User) return false;
+        }
+        return false;
+    }
+
+    public getUserId(): number {
+        return authStore.getState().user.userId;
     }
 
     public isLoggedIn(): boolean {

@@ -1,3 +1,36 @@
-.UpdateVacation {
-	
+
+/* .UpdateVacation  {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.5);
+
+} */
+.UpdateVacation > form  {
+	width: 350px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.5);
+
+
+}
+
+.UpdateVacation input, .UpdateVacation button {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 20px 0;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    
+}
+
+.UpdateVacation span {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: red;
+    position: absolute;
+    margin: 0 40px;
+    font-size: larger;
 }

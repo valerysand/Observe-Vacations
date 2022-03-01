@@ -7,22 +7,22 @@ import "./UpdateVacation.css";
 
 function UpdateVacation(): JSX.Element {
 
-    const id = +useParams().id;
+    const params = useParams();
 
     const navigate = useNavigate();
     const { register, handleSubmit, formState } = useForm<VacationModel>();
 
-    async function submit(vacation: VacationModel) {
-        try {
-            vacation.vacationId = id;
-            await vacationsService.updateVacation(vacation);
-            notifyService.success("Vacation updated by Admin");
-            navigate("/vacations");
-        }
-        catch (err: any) {
-            notifyService.error(err.message);
-        }
-    }
+ async function submit(vacation: VacationModel) {
+     try {
+         vacation.vacationId = +params.id;
+         await vacationsService.updateVacation(vacation);
+         notifyService.success(`Vacation ${vacation.vacationName} was updated`);
+         navigate("/home");
+     }
+     catch (err: any) {
+         notifyService.error(err);
+     }
+ }
 
     return (
         <div className="UpdateVacation">
@@ -74,7 +74,7 @@ function UpdateVacation(): JSX.Element {
 
                 <button>Update</button>
 
-                <button><NavLink to="/vacations">Back</NavLink></button>
+                <button><NavLink to="/home">Back</NavLink></button>
 
             </form>
         </div>

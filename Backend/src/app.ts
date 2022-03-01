@@ -32,5 +32,5 @@ expressServer.use("*", (request: Request, response: Response, next: NextFunction
 
 expressServer.use(errorsHandler); // Register error handling middleware as the last one
 
-const httpServer = expressServer.listen(3001, () => console.log("Listening..."));
+const httpServer = expressServer.listen(3002, () => console.log("Listening..."));
 socketLogic.initSocketIo(httpServer);

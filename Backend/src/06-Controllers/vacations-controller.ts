@@ -20,9 +20,10 @@ router.get("/", async (request: Request, response: Response, next: NextFunction)
     }
 });
 // Get all followed vacations:
-router.get("/followed", async (request: Request, response: Response, next: NextFunction) => {
+router.get("/followed/:userId", async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const followedVacation = await logic.getAllFollowedVacations();
+        const userId = +request.params.userId;
+        const followedVacation = await logic.getAllFollowedVacations(userId);
         response.json(followedVacation);
     }
     catch (err: any) {
@@ -66,19 +67,7 @@ router.put("/:id", verifyAdmin, async (request: Request, response: Response, nex
         next(err);
     }
 });
-// Update vacation
-router.patch("/:id", verifyAdmin, async (request: Request, response: Response, next: NextFunction) => {
-    try {
-        const id = +request.params.id;
-        request.body.id = id;
-        const vacation = new VacationModel(request.body);
-        const updateVacation = await logic.updatePartialVacation(vacation);
-        response.json(updateVacation);
-    }
-    catch (err: any) {
-        next(err);
-    }
-});
+
 // Delete vacation from db
 router.delete("/:id", verifyAdmin, async (request: Request, response: Response, next: NextFunction) => {
     try {
@@ -94,7 +83,7 @@ router.delete("/:id", verifyAdmin, async (request: Request, response: Response, 
 router.get("/images/:imageName", (request: Request, response: Response, next: NextFunction) => {
     try {
         const imageName = request.params.imageName;
-        const absolutePath = path.join(__dirname, "..", "Assets", "Images", "vacations", imageName);
+        const absolutePath = path.join(__dirname, "..", "Assets", "Images", "Vacations", imageName);
         response.sendFile(absolutePath);
     }
     catch (err: any) {

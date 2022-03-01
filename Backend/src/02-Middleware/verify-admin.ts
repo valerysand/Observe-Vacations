@@ -13,8 +13,6 @@ async function verifyAdmin(request: Request, response: Response, next: NextFunct
     }
 
     const user = jwt.getUserFromToken(request);
-    console.log(user);
-
 
     if (user.role !== Role.Admin) {
         const error = new ClientError(403, "You are not authorized");
