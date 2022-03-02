@@ -4,6 +4,7 @@ import logic from "../05-BLL/vacations-logic";
 import path from "path";
 import verifyToken from "../02-Middleware/verify-token";
 import verifyAdmin from "../02-Middleware/verify-admin";
+import jwt from "../01-Utils/jwt";
 
 
 const router = express.Router();
@@ -20,10 +21,10 @@ router.get("/", async (request: Request, response: Response, next: NextFunction)
     }
 });
 // Get all followed vacations:
-router.get("/followed/:userId", async (request: Request, response: Response, next: NextFunction) => {
+router.get("/followed", async (request: Request, response: Response, next: NextFunction) => {
     try {
-        const userId = +request.params.userId;
-        const followedVacation = await logic.getAllFollowedVacations(userId);
+        const user = jwt.getUserFromToken(request);
+        const followedVacation = await logic.getAllFollowedVacations(user.userId);
         response.json(followedVacation);
     }
     catch (err: any) {
@@ -54,7 +55,7 @@ router.post("/", verifyAdmin, async (request: Request, response: Response, next:
     }
 });
 // Update vacation
-router.put("/:id", verifyAdmin, async (request: Request, response: Response, next: NextFunction) => {
+router.patch("/:id", verifyAdmin, async (request: Request, response: Response, next: NextFunction) => {
     try {
         const id = +request.params.id;
         request.body.id = id;

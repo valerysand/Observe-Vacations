@@ -25,6 +25,7 @@ async function getOneVacation(id: number): Promise<VacationModel> {
     if (!vacation) {
         throw new ClientError(404, `id ${id} not found`);
     }
+    socketLogic.emitUpdateFollow(vacation);
     return vacation;
 }
 
@@ -59,7 +60,7 @@ async function addVacation(vacation: VacationModel): Promise<VacationModel> {
 // Update full vacation
 async function updateFullVacation(vacation: VacationModel): Promise<VacationModel> {
     // Validate put
-    const errors = vacation.validatePut();
+    const errors = vacation.validatePatch();
     if (errors) {
         throw new ClientError(400, errors);
     }
@@ -113,7 +114,7 @@ async function deleteVacation(id: number): Promise<void> {
 async function getAllFollowedVacations(userId: number): Promise<VacationModel[]> {
     const sql = `SELECT Vacations.vacationId, vacationName,
                     DATE_FORMAT(fromDate, "%Y-%m-%d") AS fromDate, 
-                    DATE_FORMAT(toDate, "%Y-%m-%d") AS toDate, vacationDescription, vacationName, followers, vacationPrice 
+                    DATE_FORMAT(toDate, "%Y-%m-%d") AS toDate, vacationDescription, vacationImage, vacationName, followers, vacationPrice 
                     FROM Vacations 
                     JOIN savedVacations on Vacations.vacationId = savedVacations.vacationId 
                     WHERE userId = ${userId}`;

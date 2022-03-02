@@ -2,9 +2,9 @@ class FollowModel {
     userId: number;
     vacationId: number;
 
-    public constructor(vacation: FollowModel) {
-        this.userId = vacation.userId;
-        this.vacationId = vacation.vacationId;
+    public constructor(userId: number, vacationId: number) {
+        this.userId = userId;
+        this.vacationId = vacationId;
     }
 }
 

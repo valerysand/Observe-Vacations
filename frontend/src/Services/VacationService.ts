@@ -1,6 +1,6 @@
 import axios from "axios";
 import VacationModel from "../Models/VacationModel";
-import vacationsStore from "../Redux/Store";
+import { vacationsStore } from "../Redux/Store";
 import { addVacationAction, deleteVacationAction, fetchFollowedVacationsAction, fetchVacationsAction } from "../Redux/VacationsState";
 import config from "../Utils/Config";
 
@@ -8,31 +8,19 @@ import config from "../Utils/Config";
 class VacationService {
     // Get all vacations from API
     public async getAllVacations(): Promise<VacationModel[]> {
-        if (vacationsStore.getState().vacations.length === 0) {
             const response = await axios.get<VacationModel[]>(config.urls.vacations);
             const vacations = response.data;
-            vacationsStore.dispatch(fetchVacationsAction(vacations));
-            return vacations;            
-        }
-        else {
-            const vacations = vacationsStore.getState().vacations;
             return vacations;
-        }
+      
     }
 
     // Get all followed vacations:
-    public async getAllFollowedVacations(userId: number): Promise<VacationModel[]> {
-        if (vacationsStore.getState().followedVacations.length === 0) {
-            const response = await axios.get<VacationModel[]>(config.urls.followedVacations + userId);
-            const followedVacations = response.data;
-            vacationsStore.dispatch(fetchFollowedVacationsAction(followedVacations));
-            return followedVacations;            
-        }
-        else {
-            const followedVacations = vacationsStore.getState().followedVacations;
-            return followedVacations;
-        }
+    public async getAllFollowedVacations(): Promise<VacationModel[]> {
+        const response = await axios.get<VacationModel[]>(config.urls.followedVacations);
+        const followedVacations = response.data;
+        return followedVacations;
     }
+
 
     // Get one vacation from API
     public async getOneVacation(id: number): Promise<VacationModel> {
@@ -69,7 +57,7 @@ class VacationService {
         myFromData.append("vacationPrice", vacation.vacationPrice.toString());
         myFromData.append("fromDate", vacation.fromDate.toString());
         myFromData.append("toDate", vacation.toDate.toString());
-        const response = await axios.put<VacationModel>(config.urls.vacations + vacation.vacationId, myFromData);
+        const response = await axios.patch<VacationModel>(config.urls.vacations + vacation.vacationId, myFromData);
         const updatedVacation = response.data;
         vacationsStore.dispatch(addVacationAction(updatedVacation));
         return updatedVacation;

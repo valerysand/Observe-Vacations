@@ -1,7 +1,4 @@
-import { Component } from "react";
-import { Unsubscribe } from "redux";
-import VacationModel from "../../../Models/VacationModel";
-import vacationsStore, { authStore } from "../../../Redux/Store";
+import { vacationsStore, authStore, followStore } from "../../../Redux/Store";
 import authService from "../../../Services/AuthService";
 import vacationsService from "../../../Services/VacationService";
 import Loading from "../../SharedArea/Loading/Loading";
@@ -10,74 +7,65 @@ import "./VacationsList.css";
 import { Grid } from "@mui/material";
 import notifyService from "../../../Services/NotifyService";
 import UserModel from "../../../Models/UserModel";
+import VacationModel from "../../../Models/VacationModel";
+import { useEffect, useState } from "react";
+import { fetchFollowedVacationsAction, fetchVacationsAction } from "../../../Redux/VacationsState";
+import followService from "../../../Services/FollowService";
 
 
-interface VacationsListState {
-    vacations: VacationModel[];   // vacations list
-    followedVacations: VacationModel[]; // vacations that the user is following
-    isAdmin: boolean; // is the user an admin
-    userId: number; // the user id
-}
 
-class VacationsList extends Component<{}, VacationsListState> {
+function VacationsList(): JSX.Element {
+    const [vacations, setVacations] = useState<VacationModel[]>([]);
+    const user = authStore.getState().user;
 
-    private unsubscribeMeFollowedVacations: Unsubscribe;
-    private unsubscribeMeVacations: Unsubscribe;
-
-    public async componentDidMount() {
+    useEffect((async () => {
         try {
-            const userId = authService.getUserId();
-            const followedVacations = await vacationsService.getAllFollowedVacations(userId);
-            this.setState({ followedVacations });
+            // get vacations from redux
+            let vacations = vacationsStore.getState().vacations;
+            // if redux vacations is empty, get them from the server
+            if (vacations.length === 0) {
+                vacations = await vacationsService.getAllVacations();
+                vacationsStore.dispatch(fetchVacationsAction(vacations));
+            }
 
-            this.unsubscribeMeFollowedVacations = vacationsStore.subscribe(async () => {
-                const followedVacations = await vacationsService.getAllFollowedVacations(userId);
-                this.setState({ followedVacations });
+            // get user follows from redux
+            let userFollows = vacationsStore.getState().followedVacations;
+            // if redux follows is empty, get them from the server
+            if (userFollows.length === 0) {
+                userFollows = await vacationsService.getAllFollowedVacations();
+                vacationsStore.dispatch(fetchFollowedVacationsAction(userFollows));
+            }
+
+            // sort vacations by user follows
+            vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
+            setVacations(vacations);
+
+            // Listen to vacations changes
+            const unsubscribe = vacationsStore.subscribe(async () => {
+                vacations = await vacationsService.getAllVacations();
+                userFollows = vacationsStore.getState().followedVacations;
+                vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
+                setVacations(vacations);
             });
 
-            const vacations = await vacationsService.getAllVacations();
-            this.setState({ vacations });
-
-            this.unsubscribeMeVacations = vacationsStore.subscribe(async () => {
-                const vacations = await vacationsService.getAllVacations();
-                this.setState({ vacations });
-            });
-
-
+            return () => { unsubscribe() };
         }
         catch (err: any) {
-            notifyService.error(err.message)
-
+            notifyService.error(err.message);
         }
-    }
+    }) as any, [])
 
-    public componentWillUnmount(): void {
-        this.unsubscribeMeFollowedVacations();
-        this.unsubscribeMeVacations();
-    }
 
-    public render(): JSX.Element {
-        return (
-
-            <div className="VacationsList">
-
-                {this.state?.vacations === undefined && <Loading />}
-
-                <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-                {this.state?.followedVacations?.map(v =>
-                        <Grid item xs={2} sm={4} md={3} key={v.vacationId}>
-                            <VacationCard key={v.vacationName} vacation={v} />
-                        </Grid>
-                    )}
-                    {this.state?.vacations?.map(v =>
-                        <Grid item xs={2} sm={4} md={3} key={v.vacationId}>
-                            <VacationCard key={v.vacationName} vacation={v} />
-                        </Grid>
-                    )}
-                </Grid>
-            </div>
-        );
-    }
+    return (
+        <div className="VacationsList">
+            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                {vacations ? vacations.map(v =>
+                    <Grid item xs={2} sm={4} md={3} key={v.vacationId}>
+                        <VacationCard key={v.vacationName} vacation={v} user={user} />
+                    </Grid>) : <Loading />}
+            </Grid>
+        </div>
+    );
 }
 
 export default VacationsList;

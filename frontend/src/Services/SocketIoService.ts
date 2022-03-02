@@ -1,9 +1,12 @@
-import {Socket, io} from "socket.io-client";
+import { followStore } from './../Redux/Store';
+import { addFollowAction, deleteFollowAction, FollowAction } from './../Redux/FollowState';
+import { Socket, io } from "socket.io-client";
 import VacationModel from "../Models/VacationModel";
-import vacationsStore from "../Redux/Store";
+import { vacationsStore } from "../Redux/Store";
 import { addVacationAction, deleteVacationAction, updateVacationAction } from "../Redux/VacationsState";
 import config from "../Utils/Config";
 import authService from "./AuthService";
+import FollowModel from '../Models/FollowModel';
 
 
 
@@ -15,7 +18,7 @@ class SocketIoServer {
         // Connect to socket server:
         this.socket = io(config.urls.socketServer);
 
-        if(authService.isAdmin()) return;
+        if (authService.isAdmin()) return;
 
         // Listen to adding a vacation by admin:
         this.socket.on("admin-add-vacation", (vacation: VacationModel) => {
@@ -31,6 +34,23 @@ class SocketIoServer {
         this.socket.on("admin-delete-vacation", (id: number) => {
             vacationsStore.dispatch(deleteVacationAction(id));
         });
+
+        // Listen to adding a vacation by user:
+        this.socket.on("user-add-follow", (follow: FollowModel) => {
+            followStore.dispatch(addFollowAction(follow));
+        });
+
+        // Listen to removing a vacation by user:
+        this.socket.on("user-remove-follow", (follow: FollowModel) => {
+            followStore.dispatch(deleteFollowAction(follow));
+        }
+        );
+
+        // Listen to updating a vacation by user:
+        this.socket.on("user-update-follow", (vacation: VacationModel) => {
+            vacationsStore.dispatch(updateVacationAction(vacation));
+        }
+        );
     }
 
     public disconnect(): void {

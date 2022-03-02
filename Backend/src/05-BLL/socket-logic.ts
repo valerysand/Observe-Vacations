@@ -1,5 +1,6 @@
 import { Server as HttpServer } from 'http';
 import { Server as SocketIoServer, Socket } from 'socket.io';
+import FollowModel from '../03-Models/followVacation-model';
 import VacationModel from '../03-Models/vacation-model';
 
 
@@ -18,6 +19,8 @@ function initSocketIo(httpServer: HttpServer): void {
     });
 }
 
+
+
 function emitAddVacation(vacation: VacationModel): void {
     socketIoServer.sockets.emit("admin-add-vacation", vacation);
 }
@@ -30,9 +33,23 @@ function emitDeleteVacation(id: number): void {
     socketIoServer.sockets.emit("admin-delete-vacation", id);
 }
 
+function emitAddFollow(follow: FollowModel): void {
+    socketIoServer.sockets.emit("user-add-follow", follow);
+}
+
+function emitRemoveFollow(follow: FollowModel): void {
+    socketIoServer.sockets.emit("user-remove-follow", follow);
+}
+
+function emitUpdateFollow(vacation: VacationModel): void {
+    socketIoServer.sockets.emit("user-update-follow", vacation);
+}
 export default {
     initSocketIo,
     emitAddVacation, 
     emitUpdateVacation,
-    emitDeleteVacation
+    emitDeleteVacation,
+    emitAddFollow,
+    emitRemoveFollow,
+    emitUpdateFollow
 }
