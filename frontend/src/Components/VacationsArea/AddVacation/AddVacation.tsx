@@ -32,7 +32,7 @@ function AddVacation(): JSX.Element {
     }
 
     return (
-        <div className="AddVacation Box">
+        <div className="AddVacation">
 
             <h2>Add Vacation</h2>
 
@@ -59,23 +59,26 @@ function AddVacation(): JSX.Element {
                 <span>{formState.errors.vacationDescription?.message}</span>
 
                 <label>Price: </label>
-                <input type="number" {...register("vacationPrice", {
+                <input type="number"  {...register("vacationPrice", {
                     required: { value: true, message: "Missing price" },
                     min: { value: 0, message: "Price can't be negative" },
-                    max: { value: 1000, message: "Price can't exceed $1000" }
+                    max: { value: 1000, message: "Price can't exceed $1000" },
+                
+                    
                 })} step="0.01" />
                 <span>{formState.errors.vacationPrice?.message}</span>
 
                 <label>From date: </label>
-                <input type="datetime-local" {...register("fromDate", {
+                <input type="date" {...register("fromDate", {
                     required: { value: true, message: "Missing date" },
                     
                 })} />
                 <span>{formState.errors.fromDate?.message}</span>
 
                 <label>To date: </label>
-                <input type="datetime-local" {...register("toDate", {
+                <input type="date" {...register("toDate", {
                     required: { value: true, message: "Missing date" },
+
                 
                 })} />
                 <span>{formState.errors.toDate?.message}</span>

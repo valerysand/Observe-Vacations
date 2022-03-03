@@ -18,12 +18,13 @@ class AuthService {
         return false;
     }
 
-    public getUserId(): number {
-        return authStore.getState().user.userId;
-    }
-
     public isLoggedIn(): boolean {
         return authStore.getState().token !== null;
+    }
+
+    public async getAllUsers(): Promise<UserModel[]> {
+        const response = await axios.get<UserModel[]>(config.urls.users);
+        return response.data;
     }
 
     public async register(user: UserModel): Promise<void> {

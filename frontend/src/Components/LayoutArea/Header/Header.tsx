@@ -1,52 +1,58 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import AuthMenu from "../../AuthArea/AuthMenu/AuthMenu";
-import logoImage from "../../../Assets/logo.png";
+// import logoImage from "../../../Assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import authService from "../../../Services/AuthService";
-import { Unsubscribe } from "redux";
 import { authStore } from "../../../Redux/Store";
+import UserModel from "../../../Models/UserModel";
+import Role from "../../../Models/Role";
 
 function Header(): JSX.Element {
 
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
-
-    const unsubscribeMe: Unsubscribe = authStore.subscribe(() => {
-        const isAdmin = authService.isAdmin();
-        setIsAdmin(isAdmin);
-    })
-
+    const navigator = useNavigate();
+    const [user, setUser] = useState<UserModel>();
 
     useEffect(() => {
-        return () => {
-            unsubscribeMe();
-        };
+        const user = authStore.getState().user;
+        setUser(user);
+
+        const unsubscribe = authStore.subscribe(() => {
+            const user = authStore.getState().user;
+            setUser(user);
+        });
+
+        return unsubscribe;
     }, []);
 
-    const navigator = useNavigate();
+
     return (
         <>
-            <Navbar variant="dark" >
-                <Container>
-                    <Navbar.Brand onClick={() => navigator("/home")}>
+            <Navbar variant="dark" expand="lg" >
+                <Container fluid >
+                    <Navbar.Brand >
                         <img
                             alt=""
-                            src={logoImage}
-                            width="40"
-                            height="40"
-                            className="d-inline-block align-center"
+                            // src={logoImage}
+                            width="30"
+                            height="30"
+                            className="d-inline-block align-top"
                         />{' '}
+
                         Observe Vacations
                     </Navbar.Brand>
                     <Nav
                         className="me-auto my-2 my-lg-0"
-                        style={{ maxHeight: '100px' }}
+                        style={{ maxHeight: '100px',
+                         }}
                         navbarScroll
+
                     >
                         <Nav.Link onClick={() => navigator("/home")}>Home</Nav.Link>
-                        {isAdmin && <Nav.Link onClick={() => navigator("/add-vacation")}>Add vacation</Nav.Link>}
+                        {user?.role === Role.Admin && <Nav.Link  onClick={() => navigator("/add-vacation")}>Add vacation</Nav.Link>}
+
                     </Nav>
                     <AuthMenu />
+
                 </Container>
             </Navbar>
         </>

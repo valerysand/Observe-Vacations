@@ -46,13 +46,9 @@ class SocketIoServer {
         }
         );
 
-        // Listen to updating a vacation by user:
-        this.socket.on("user-update-follow", (vacation: VacationModel) => {
-            vacationsStore.dispatch(updateVacationAction(vacation));
-        }
-        );
+        
     }
-
+    // Listen to disconnection:
     public disconnect(): void {
         this.socket.disconnect();
     }

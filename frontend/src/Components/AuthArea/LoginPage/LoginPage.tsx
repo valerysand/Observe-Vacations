@@ -11,8 +11,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import CredentialModel from "../../../Models/CredentialModel";
 import authService from "../../../Services/AuthService";
 import { useForm } from "react-hook-form";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import notifyService from "../../../Services/NotifyService";
 
 

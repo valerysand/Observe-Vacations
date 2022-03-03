@@ -37,18 +37,30 @@ function VacationsList(): JSX.Element {
             }
 
             // sort vacations by user follows
-            vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
-            setVacations(vacations);
+            const followedVacations = vacations.filter(v => userFollows.some(f => f.vacationId === v.vacationId));
+            const notFollowedVacations = vacations.filter(v => !userFollows.some(f => f.vacationId === v.vacationId));
+            setVacations([...followedVacations, ...notFollowedVacations]);
+
+            // vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
+            // setVacations(vacations);
 
             // Listen to vacations changes
             const unsubscribe = vacationsStore.subscribe(async () => {
-                vacations = await vacationsService.getAllVacations();
+                vacations = vacationsStore.getState().vacations;
                 userFollows = vacationsStore.getState().followedVacations;
-                vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
-                setVacations(vacations);
+                // sort vacations by user follows
+                const followedVacations = vacations.filter(v => userFollows.some(f => f.vacationId === v.vacationId));
+                const notFollowedVacations = vacations.filter(v => !userFollows.some(f => f.vacationId === v.vacationId));
+                setVacations([...followedVacations, ...notFollowedVacations]);
+
+                // vacations = await vacationsService.getAllVacations();
+                // userFollows = vacationsStore.getState().followedVacations;
+                // vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
+                // setVacations(vacations);
             });
 
-            return () => { unsubscribe() };
+            return unsubscribe;
+
         }
         catch (err: any) {
             notifyService.error(err.message);

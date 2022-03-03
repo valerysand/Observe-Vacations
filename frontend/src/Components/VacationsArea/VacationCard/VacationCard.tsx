@@ -3,22 +3,17 @@ import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import EditIcon from '@mui/icons-material/Edit';
 import ClearIcon from '@mui/icons-material/Clear';
 import VacationModel from '../../../Models/VacationModel';
 import config from '../../../Utils/Config';
-import { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { authStore, vacationsStore } from '../../../Redux/Store';
-import followService from '../../../Services/FollowService';
+import { useNavigate } from 'react-router-dom';
+import {  vacationsStore } from '../../../Redux/Store';
 import vacationsService from '../../../Services/VacationService';
 import { deleteVacationAction } from '../../../Redux/VacationsState';
-import authService from '../../../Services/AuthService';
 import UserModel from '../../../Models/UserModel';
-import { CardHeader, createTheme } from '@mui/material';
-import notifyService from '../../../Services/NotifyService';
 import Role from '../../../Models/Role';
 import Follow from '../../SharedArea/Follow/Follow';
 
@@ -30,7 +25,6 @@ interface VacationCardProps {
 }
 
 // MUI Theme
-const theme = createTheme();
 
  function VacationCard(props: VacationCardProps):JSX.Element {
 
@@ -38,9 +32,18 @@ const theme = createTheme();
 
     async function handleDelete(vacationId: number) {
         try {
+            // ask the user if he really wants to delete the vacation
+            window.confirm('Are you sure you want to delete this vacation?');
+            if(window.confirm('Are you sure you want to delete this vacation?')) {
+            // delete vacation from the server
             await vacationsService.deleteVacation(vacationId);
+            // delete vacation from redux
             vacationsStore.dispatch(deleteVacationAction(vacationId));
             alert("Vacation deleted");
+            }
+            else {
+                alert("Vacation not deleted");
+            }
         }
         catch (err: any) {
             alert(err.message);

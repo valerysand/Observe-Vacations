@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import { Unsubscribe } from "redux";
 import UserModel from "../../../Models/UserModel";
 import { authStore } from "../../../Redux/Store";
+import "./AuthMenu.css";
 
 interface AuthMenuState {
     user: UserModel;
@@ -30,17 +31,22 @@ class AuthMenu extends Component<{}, AuthMenuState> {
                 {!this.state?.user &&
                     <>
                         <span>Hello Guest</span>
-                        <span> | </span>
-                        <Button variant="text" color="primary"><NavLink to="/login">Login</NavLink></Button>
-                        <Button variant="text" color="error"><NavLink to="/register">Register</NavLink></Button>
+                        <NavLink to="/login">
+                            <Button variant="contained" color="inherit">
+                                Sign In
+                            </Button>
+                        </NavLink>
 
                     </>
                 }
                 {this.state?.user &&
                     <>
-                        <span>Hello {this.state.user.firstName + " " + this.state.user.lastName}</span>
-                        <span> | </span>
-                        <Button variant="text" color="error"><NavLink to="/logout">Logout</NavLink></Button>
+                        <span>Hello {this.state.user.firstName}</span>
+                        <NavLink to="/logout">
+                            <Button variant="contained" color="error">
+                                Logout
+                            </Button>
+                        </NavLink>
                     </>
                 }
 

@@ -19,13 +19,15 @@ async function getAllVacations(): Promise<VacationModel[]> {
 }
 // Get one vacation from database
 async function getOneVacation(id: number): Promise<VacationModel> {
-    const sql = "SELECT * FROM vacations WHERE vacationId = " + id;
+    const sql = `SELECT vacationId, vacationName, 
+    DATE_FORMAT(fromDate, "%d-%m-%Y") AS fromDate, 
+    DATE_FORMAT(toDate, "%d-%m-%Y") AS toDate, vacationDescription, vacationImage, followers, vacationPrice from Vacations WHERE vacationId = ` + id;
     const vacations = await dal.execute(sql);
     const vacation = vacations[0];
     if (!vacation) {
         throw new ClientError(404, `id ${id} not found`);
     }
-    socketLogic.emitUpdateFollow(vacation);
+        
     return vacation;
 }
 

@@ -5,6 +5,7 @@ abstract class Config {
         vacationsImages: "",
         register: "",
         login: "",
+        users: "",
         addFollow: "",
         removeFollow: "",
         socketServer: ""
@@ -17,6 +18,7 @@ abstract class Config {
             vacationsImages: baseUrl + "vacations/images/",
             register: baseUrl + "auth/register/",
             login: baseUrl + "auth/login/",
+            users: baseUrl + "auth/users/",
             addFollow: baseUrl + "follows/add/",
             removeFollow: baseUrl + "follows/remove/",
             socketServer: "http://localhost:3002"

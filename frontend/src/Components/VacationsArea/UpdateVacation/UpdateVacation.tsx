@@ -53,14 +53,14 @@ function UpdateVacation(): JSX.Element {
                 <span>{formState.errors.vacationPrice?.message}</span>
 
                 <label>From date: </label>
-                <input type="datetime-local" {...register("fromDate", {
+                <input type="date" {...register("fromDate", {
                     required: { value: true, message: "Missing date" },
 
                 })} />
                 <span>{formState.errors.fromDate?.message}</span>
 
                 <label>To date: </label>
-                <input type="datetime-local" {...register("toDate", {
+                <input type="date" {...register("toDate", {
                     required: { value: true, message: "Missing date" },
 
                 })} />

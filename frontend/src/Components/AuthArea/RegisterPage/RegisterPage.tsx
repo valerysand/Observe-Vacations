@@ -11,6 +11,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import authService from "../../../Services/AuthService";
 import UserModel from "../../../Models/UserModel";
+import { useEffect, useState } from "react";
+import notifyService from "../../../Services/NotifyService";
 
 
 
@@ -18,17 +20,25 @@ const theme = createTheme();
 
 export default function SignUp() {
 
-    const { register, handleSubmit } = useForm<UserModel>();
+    const [users, setUsers] = useState<UserModel[]>([]);
+    const { register, handleSubmit, formState } = useForm<UserModel>();
     const navigator = useNavigate();
 
+    useEffect((async () => {
+        // Get all users
+        const users = await authService.getAllUsers();
+        setUsers(users);
+    }) as any, []);
+
+    // Submit the form
     async function submit(user: UserModel) {
         try {
             await authService.register(user);
-           alert("You are registered");
+            notifyService.success("You are registered");
             navigator("/home");
         }
         catch (err: any) {
-            alert(err.message);
+            notifyService.error(err.message);
         }
     }
 
@@ -56,12 +66,19 @@ export default function SignUp() {
                                 <TextField
                                     autoComplete="given-name"
                                     name="firstName"
-                                    required
                                     fullWidth
                                     id="firstName"
                                     label="First Name"
                                     autoFocus
-                                    {...register("firstName")}
+                                    {...register("firstName", {
+                                        required: { value: true, message: "Missing first name" },
+                                        minLength: { value: 2, message: "First name must be at least 2 characters" },
+                                        maxLength: { value: 20, message: "First name can't exceed 20 characters" },
+                                    })}
+                                    {...formState.errors.firstName && {
+                                        helperText: formState.errors.firstName?.message,
+                                        error: true,
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -72,8 +89,15 @@ export default function SignUp() {
                                     label="Last Name"
                                     name="lastName"
                                     autoComplete="family-name"
-                                    {...register("lastName")}
-
+                                    {...register("lastName", {
+                                        required: { value: true, message: "Missing last name" },
+                                        minLength: { value: 2, message: "Last name must be at least 2 characters" },
+                                        maxLength: { value: 20, message: "Last name can't exceed 20 characters" },
+                                    })}
+                                    {...formState.errors.lastName && {
+                                        helperText: formState.errors.lastName?.message,
+                                        error: true,
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -84,7 +108,24 @@ export default function SignUp() {
                                     label="Username"
                                     name="username"
                                     autoComplete="username"
-                                    {...register("username")}
+                                    {...register("username", {
+                                        required: { value: true, message: "Missing username" },
+                                        minLength: { value: 2, message: "Username must be at least 2 characters" },
+                                        maxLength: { value: 20, message: "Username can't exceed 20 characters" },
+                                        validate: (value) => {
+                                            if (value === users.find(u => u.username === value)?.username) {
+                                                return "Username already exists";
+                                            }
+                                            else if (value.includes(" ")) {
+                                                return "Username can't contain spaces";
+                                            }
+                                            return true;
+                                        }
+                                    })}
+                                    {...formState.errors.username && {
+                                        helperText: formState.errors.username?.message,
+                                        error: true,
+                                    }}
 
                                 />
                             </Grid>
@@ -97,8 +138,16 @@ export default function SignUp() {
                                     type="password"
                                     id="password"
                                     autoComplete="new-password"
-                                    {...register("password")}
+                                    {...register("password", {
+                                        required: { value: true, message: "Missing password" },
+                                        minLength: { value: 6, message: "Password must be at least 6 characters" },
+                                        maxLength: { value: 20, message: "Password can't exceed 20 characters" },
 
+                                    })}
+                                    {...formState.errors.password && {
+                                        helperText: formState.errors.password?.message,
+                                        error: true,
+                                    }}
                                 />
                             </Grid>
                         </Grid>
@@ -113,7 +162,7 @@ export default function SignUp() {
                         </Button>
                         <Grid container >
                             <Grid item>
-                                    <NavLink to="/login"> Already have an account? Sign in</NavLink>
+                                <NavLink to="/login"> Already have an account? Sign in</NavLink>
                             </Grid>
                         </Grid>
                     </Box>

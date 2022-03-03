@@ -48,11 +48,17 @@ function Follow(props: FollowProps): JSX.Element {
 
     const addFollow = async () => {
         try {
+            // add follow
             await followService.addFollow(props.vacationId);
+            // update vacations
             const followedVacation = await vacationsService.getOneVacation(props.vacationId);
+            // update store
             vacationsStore.dispatch(updateVacationAction(followedVacation));
-            setIsFollow(!isFollow);
-            alert("followed");
+            // update state
+            setIsFollow(true);
+            // notify
+            notifyService.success("Vacation followed");
+
         }
         catch (err: any) {
             notifyService.error(err.message);
@@ -61,11 +67,16 @@ function Follow(props: FollowProps): JSX.Element {
 
     const removeFollow = async () => {
         try {
+            // remove follow
             await followService.removeFollow(props.vacationId);
+            // update vacations
             const unfollowedVacation = await vacationsService.getOneVacation(props.vacationId);
+            // update store
             vacationsStore.dispatch(updateVacationAction(unfollowedVacation));
-            setIsFollow(!isFollow);
-            alert("unfollowed");
+            // update state
+            setIsFollow(false);
+            // notify
+            notifyService.success("Vacation unfollowed");
         }
         catch (err: any) {
             notifyService.error(err.message);
