@@ -28,7 +28,7 @@ function UpdateVacation(): JSX.Element {
             const id = +params.id;
             vacation.vacationId = id;
             await vacationsService.updateVacation(vacation);
-            notifyService.success(`Vacation ${vacation.vacationName} was updated`);
+            notifyService.success(`Vacation ${vacation.vacationDestination} was updated`);
             navigate("/home");
         }
         catch (err: any) {
@@ -47,7 +47,7 @@ function UpdateVacation(): JSX.Element {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        background: 'rgba(255,255,255, 0.7);',
+                        background: 'rgba(255,255,255, 0.9);',
                         padding: 2,
                         borderRadius: 3
                     }}
@@ -60,16 +60,16 @@ function UpdateVacation(): JSX.Element {
                         <TextField
                             variant="standard"
                             fullWidth
-                            helperText="Vacation Name"
+                            helperText="Destination"
                             margin="normal"
                             type="text"
-                            {...register("vacationName", {
+                            {...register("vacationDestination", {
                                 required: "Name is required",
                                 minLength: { value: 3, message: "Name must be minimum 3 chars" },
                                 maxLength: { value: 100, message: "Name can't exceed 100 chars" }
                             })}
-                            {...formState.errors.vacationName && {
-                                helperText: formState.errors.vacationName.message,
+                            {...formState.errors.vacationDestination && {
+                                helperText: formState.errors.vacationDestination.message,
                                 error: true
                             }}
                         />
@@ -79,7 +79,7 @@ function UpdateVacation(): JSX.Element {
                             variant="standard"
                             margin='normal'
                             type="text"
-                            helperText="Vacation Description"
+                            helperText="Description"
                             {...register("vacationDescription", {
                                 required: { value: true, message: "Description is required" },
                                 minLength: { value: 3, message: "Name must be minimum 3 chars" },
@@ -95,7 +95,7 @@ function UpdateVacation(): JSX.Element {
                             fullWidth
                             margin='normal'
                             type="number"
-                            helperText="Vacation Price"
+                            helperText="Price"
                             variant='standard'
                             {...register("vacationPrice", {
                                 required: { value: true, message: "Price is required" },
@@ -116,6 +116,15 @@ function UpdateVacation(): JSX.Element {
                             helperText="From Date"
                             {...register("fromDate", {
                                 required: { value: true, message: "From date is required" },
+                                validate: (value) => {
+                                    const today = new Date();
+                                    const yesterday = new Date(today.getTime() - (24 * 60 * 60 * 1000));
+                                    const date = new Date(value);
+                                    if (date < yesterday) {
+                                        return "From date can't be past today";
+                                    }
+                                    return true;
+                                }
 
                             })}
                             {...formState.errors.fromDate && {

@@ -4,7 +4,7 @@ import { UploadedFile } from "express-fileupload"
 
 class VacationModel {
     public vacationId: number;
-    public vacationName: string;
+    public vacationDestination: string;
     public vacationDescription: string;
     public vacationImage: string;   //Backend return imageName to Frontend
     public fromDate: string;
@@ -16,7 +16,7 @@ class VacationModel {
 
     public constructor(vacation: VacationModel) {
         this.vacationId = vacation.vacationId;
-        this.vacationName = vacation.vacationName;
+        this.vacationDestination = vacation.vacationDestination;
         this.vacationDescription = vacation.vacationDescription;
         this.vacationImage = vacation.vacationImage;
         this.fromDate = vacation.fromDate;
@@ -29,8 +29,8 @@ class VacationModel {
     // Post Validation Schema
     private static postValidationSchema = Joi.object({
         vacationId: Joi.forbidden(),
-        vacationName: Joi.string().required().min(10).max(50),
-        vacationDescription: Joi.string().required().min(20).max(500),
+        vacationDestination: Joi.string().required().min(5).max(50),
+        vacationDescription: Joi.string().required().min(10).max(500),
         vacationImage: Joi.forbidden(),
         fromDate: Joi.string().required().min(4).max(100),
         toDate: Joi.string().required().min(4).max(100),
@@ -42,7 +42,7 @@ class VacationModel {
     // Put Validation Schema
     private static putValidationSchema = Joi.object({
         vacationId: Joi.number().required().positive().integer(),
-        vacationName: Joi.string().required().min(10).max(50),
+        vacationDestination: Joi.string().required().min(5).max(50),
         vacationDescription: Joi.string().required().min(20).max(500),
         vacationImage: Joi.forbidden(),
         fromDate: Joi.string().required().min(4).max(100),
@@ -56,7 +56,7 @@ class VacationModel {
     // Patch Validation Schema
     private static patchValidationSchema = Joi.object({
         vacationId: Joi.required(),
-        vacationName: Joi.string().optional().min(10).max(50),
+        vacationDestination: Joi.string().optional().min(5).max(50),
         vacationDescription: Joi.string().optional().min(20).max(500),
         vacationImage: Joi.forbidden(),
         fromDate: Joi.string().optional(),

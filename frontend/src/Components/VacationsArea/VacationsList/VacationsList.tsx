@@ -62,7 +62,7 @@ function VacationsList(): JSX.Element {
             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                 {vacations ? vacations.map(v =>
                     <Grid item xs={2} sm={4} md={3} key={v.vacationId}>
-                        <VacationCard key={v.vacationName} vacation={v} user={user} />
+                        <VacationCard key={v.vacationDestination} vacation={v} user={user} />
                     </Grid>) : <Loading />}
             </Grid>
         </div>

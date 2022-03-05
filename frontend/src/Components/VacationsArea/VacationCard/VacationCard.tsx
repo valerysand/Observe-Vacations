@@ -53,7 +53,7 @@ function VacationCard(props: VacationCardProps): JSX.Element {
             maxHeight: 450,
             height: 440,
             borderRadius: 3,
-            background: "rgba(255, 255, 255, 0.8)",
+            background: "rgba(255, 255, 255, 0.9)",
 
         }} >
             {props.user?.role === Role.Admin &&
@@ -64,11 +64,11 @@ function VacationCard(props: VacationCardProps): JSX.Element {
                 component="img"
                 height="200"
                 image={config.urls.vacationsImages + props.vacation.vacationImage}
-                alt={props.vacation.vacationName}
+                alt={props.vacation.vacationDestination}
             />
             <CardContent>
                 <Typography variant="subtitle1" color="dark">
-                    {props.vacation.vacationName}
+                    {props.vacation.vacationDestination}
                 </Typography>
                 <Typography variant="subtitle2" color="dark">
 
@@ -98,7 +98,11 @@ function VacationCard(props: VacationCardProps): JSX.Element {
 
                 </CardActions>
                 :
-                <Follow vacationId={props.vacation?.vacationId} />
+                <>
+                   
+                    <Follow vacationId={props.vacation?.vacationId} followers={props.vacation?.followers}/>
+                </>
+
             }
         </Card>
     );

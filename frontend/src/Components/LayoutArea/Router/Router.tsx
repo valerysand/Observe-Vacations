@@ -8,6 +8,7 @@ import SignIn from "../../AuthArea/LoginPage/LoginPage";
 import Logout from "../../AuthArea/Logout/Logout";
 import SignUp from "../../AuthArea/RegisterPage/RegisterPage";
 import AddVacation from "../../VacationsArea/AddVacation/AddVacation";
+import Chart from "../../VacationsArea/Chart/Chart";
 import UpdateVacation from "../../VacationsArea/UpdateVacation/UpdateVacation";
 
 import VacationsList from "../../VacationsArea/VacationsList/VacationsList";
@@ -64,6 +65,7 @@ function Router(): JSX.Element {
                 {/* Vacations Routes */}
                 <Route path="/add-vacation" element={isAdmin ? <AddVacation /> : <Navigate to="*" />} />
                 <Route path="/update-vacation/:id" element={isAdmin ? <UpdateVacation /> : <Navigate to="*" />} />
+                <Route path="/chart" element={isAdmin ? <Chart /> : <Navigate to="*" />} />
                 <Route path="/" element={<Navigate replace to="/home" />} />
             </Routes>
         </div>

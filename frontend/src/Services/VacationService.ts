@@ -33,7 +33,7 @@ class VacationService {
     // Add vacation to API
     public async addVacation(vacation: VacationModel): Promise<VacationModel> {
         const myFromData = new FormData();
-        myFromData.append("vacationName", vacation.vacationName);
+        myFromData.append("vacationDestination", vacation.vacationDestination);
         myFromData.append("vacationDescription", vacation.vacationDescription);
         myFromData.append("vacationPrice", vacation.vacationPrice.toString());
         myFromData.append("fromDate", vacation.fromDate.toString());
@@ -48,7 +48,7 @@ class VacationService {
     // Update vacation in API
     public async updateVacation(vacation: VacationModel): Promise<VacationModel> {
         const myFromData = new FormData();
-        myFromData.append("vacationName", vacation.vacationName);
+        myFromData.append("vacationDestination", vacation.vacationDestination);
         myFromData.append("vacationDescription", vacation.vacationDescription);
         myFromData.append("image", vacation.image.item(0));
         myFromData.append("vacationPrice", vacation.vacationPrice.toString());

@@ -8,7 +8,7 @@ import safeDelete from "../01-Utils/safe-delete";
 
 // Get all vacations from database
 async function getAllVacations(): Promise<VacationModel[]> {
-    const sql = `SELECT vacationId, vacationName, 
+    const sql = `SELECT vacationId, vacationDestination, 
                 DATE_FORMAT(fromDate, "%d-%m-%Y") AS fromDate, 
                 DATE_FORMAT(toDate, "%d-%m-%Y") AS toDate, vacationDescription, vacationImage, followers, vacationPrice from Vacations`;
     const vacations = await dal.execute(sql);
@@ -16,13 +16,13 @@ async function getAllVacations(): Promise<VacationModel[]> {
 }
 // Get one vacation from database
 async function getOneVacation(id: number): Promise<VacationModel> {
-    const sql = `SELECT vacationId, vacationName, 
+    const sql = `SELECT vacationId, vacationDestination, 
     DATE_FORMAT(fromDate, "%d-%m-%Y") AS fromDate, 
     DATE_FORMAT(toDate, "%d-%m-%Y") AS toDate, vacationDescription, vacationImage, followers, vacationPrice from Vacations WHERE vacationId = ` + id;
     const vacations = await dal.execute(sql);
     const vacation = vacations[0];
     socketLogic.emitAddVacation(vacation);
-    console.log("user liked vacation: " + vacation.vacationName);
+    console.log("user liked vacation: " + vacation.vacationDestination);
     
     if (!vacation) {
         throw new ClientError(404, `id ${id} not found`);
@@ -45,8 +45,8 @@ async function addVacation(vacation: VacationModel): Promise<VacationModel> {
     // 2. Create uuid file name including the original extension: 
     vacation.vacationImage = uuid() + extension;
 
-    const sql = `INSERT INTO vacations(vacationName, vacationDescription, vacationImage, fromDate, toDate, vacationPrice)
-    VALUES('${vacation.vacationName}', '${vacation.vacationDescription}', '${vacation.vacationImage}', '${vacation.fromDate}', '${vacation.toDate}', ${vacation.vacationPrice})`;
+    const sql = `INSERT INTO vacations(vacationDestination, vacationDescription, vacationImage, fromDate, toDate, vacationPrice)
+    VALUES('${vacation.vacationDestination}', '${vacation.vacationDescription}', '${vacation.vacationImage}', '${vacation.fromDate}', '${vacation.toDate}', ${vacation.vacationPrice})`;
     const info: OkPacket = await dal.execute(sql);
     vacation.vacationId = info.insertId;
     // 3. Save the image to the disk:
@@ -81,13 +81,13 @@ async function updateFullVacation(vacation: VacationModel): Promise<VacationMode
         vacation.vacationImage = uuid() + extension;
 
         await vacation.image.mv("./src/Assets/Images/Vacations/" + vacation.vacationImage);
-        safeDelete("./src/Assets/Images/Vacations/" + dbVacation.vacationName); // delete the old image from disk
+        safeDelete("./src/Assets/Images/Vacations/" + dbVacation.vacationDestination); // delete the old image from disk
 
         delete vacation.image;
     }
 
     const sql = `UPDATE vacations SET
-                vacationName = '${vacation.vacationName}',
+                vacationDestination = '${vacation.vacationDestination}',
                 vacationDescription = '${vacation.vacationDescription}',
                 vacationImage = '${vacation.vacationImage}',
                 fromDate = '${vacation.fromDate}',
@@ -114,9 +114,9 @@ async function deleteVacation(id: number): Promise<void> {
 
 // Get all followed vacations:
 async function getAllFollowedVacations(userId: number): Promise<VacationModel[]> {
-    const sql = `SELECT Vacations.vacationId, vacationName,
+    const sql = `SELECT Vacations.vacationId, vacationDestination,
                     DATE_FORMAT(fromDate, "%Y-%m-%d") AS fromDate, 
-                    DATE_FORMAT(toDate, "%Y-%m-%d") AS toDate, vacationDescription, vacationImage, vacationName, followers, vacationPrice 
+                    DATE_FORMAT(toDate, "%Y-%m-%d") AS toDate, vacationDescription, vacationImage, vacationDestination, followers, vacationPrice 
                     FROM Vacations 
                     JOIN savedVacations on Vacations.vacationId = savedVacations.vacationId 
                     WHERE userId = ${userId}`;

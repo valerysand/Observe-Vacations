@@ -14,6 +14,7 @@ import { FavoriteOutlined } from "@material-ui/icons";
 
 interface FollowProps {
     vacationId: number;
+    followers: number;
 }
 
 function Follow(props: FollowProps): JSX.Element {
@@ -86,6 +87,7 @@ function Follow(props: FollowProps): JSX.Element {
     return (
         <CardActions>
             {isFollow ? <IconButton onClick={removeFollow}><FavoriteIcon /></IconButton> : <IconButton onClick={addFollow}><FavoriteBorderIcon /></IconButton>}
+            {props.followers}
         </CardActions>
 
 

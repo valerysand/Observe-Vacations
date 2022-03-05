@@ -19,7 +19,7 @@ class UserModel {
     }
 
     private static registerValidationSchema = Joi.object({
-        id: Joi.number().optional().integer().positive(),
+        userId: Joi.forbidden(),
         firstName: Joi.string().required().min(2).max(20),
         lastName: Joi.string().required().min(2).max(20),
         username: Joi.string().required().min(5).max(20),

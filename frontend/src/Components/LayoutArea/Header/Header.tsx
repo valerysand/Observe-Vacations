@@ -49,6 +49,7 @@ function Header(): JSX.Element {
                     >
                         <Nav.Link onClick={() => navigator("/home")}>Home</Nav.Link>
                         {user?.role === Role.Admin && <Nav.Link  onClick={() => navigator("/add-vacation")}>Add vacation</Nav.Link>}
+                        {user?.role === Role.Admin && <Nav.Link  onClick={() => navigator("/chart")}>Chart</Nav.Link>}
 
                     </Nav>
                     <AuthMenu />
