@@ -11,8 +11,8 @@ class CredentialsModel {
     }
 
     private static loginValidationSchema = Joi.object({
-        username: Joi.string().required().min(2).max(100),
-        password: Joi.string().required().min(4).max(100)
+        username: Joi.string().required().min(2).max(20),
+        password: Joi.string().required().min(5).max(20)
     });
 
     public validateLogin() {

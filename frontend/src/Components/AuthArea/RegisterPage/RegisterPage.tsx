@@ -110,7 +110,7 @@ export default function SignUp() {
                                     autoComplete="username"
                                     {...register("username", {
                                         required: { value: true, message: "Missing username" },
-                                        minLength: { value: 2, message: "Username must be at least 2 characters" },
+                                        minLength: { value: 5, message: "Username must be at least 5 characters" },
                                         maxLength: { value: 20, message: "Username can't exceed 20 characters" },
                                         validate: (value) => {
                                             if (value === users.find(u => u.username === value)?.username) {

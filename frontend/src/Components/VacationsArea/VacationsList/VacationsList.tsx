@@ -36,27 +36,16 @@ function VacationsList(): JSX.Element {
                 vacationsStore.dispatch(fetchFollowedVacationsAction(userFollows));
             }
 
-            // sort vacations by user follows
-            const followedVacations = vacations.filter(v => userFollows.some(f => f.vacationId === v.vacationId));
-            const notFollowedVacations = vacations.filter(v => !userFollows.some(f => f.vacationId === v.vacationId));
-            setVacations([...followedVacations, ...notFollowedVacations]);
-
-            // vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
-            // setVacations(vacations);
+            vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
+            // Change the state
+            setVacations(vacations);
 
             // Listen to vacations changes
             const unsubscribe = vacationsStore.subscribe(async () => {
-                vacations = vacationsStore.getState().vacations;
+                vacations = await vacationsService.getAllVacations();
                 userFollows = vacationsStore.getState().followedVacations;
-                // sort vacations by user follows
-                const followedVacations = vacations.filter(v => userFollows.some(f => f.vacationId === v.vacationId));
-                const notFollowedVacations = vacations.filter(v => !userFollows.some(f => f.vacationId === v.vacationId));
-                setVacations([...followedVacations, ...notFollowedVacations]);
-
-                // vacations = await vacationsService.getAllVacations();
-                // userFollows = vacationsStore.getState().followedVacations;
-                // vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
-                // setVacations(vacations);
+                vacations.sort(v => userFollows.find(f => f.vacationId === v.vacationId) ? -1 : 1);
+                setVacations(vacations);
             });
 
             return unsubscribe;

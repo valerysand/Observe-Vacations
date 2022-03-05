@@ -1,7 +1,7 @@
 import axios from "axios";
 import VacationModel from "../Models/VacationModel";
 import { vacationsStore } from "../Redux/Store";
-import { addVacationAction, deleteVacationAction, fetchFollowedVacationsAction, fetchVacationsAction } from "../Redux/VacationsState";
+import { addVacationAction, deleteVacationAction, fetchFollowedVacationsAction, fetchVacationsAction, updateVacationAction } from "../Redux/VacationsState";
 import config from "../Utils/Config";
 
 
@@ -24,13 +24,10 @@ class VacationService {
 
     // Get one vacation from API
     public async getOneVacation(id: number): Promise<VacationModel> {
-        const vacations = vacationsStore.getState().vacations;
-        const vacation = vacations.find(vacation => vacation.vacationId === id);
-        if (vacation) {
-            return vacation;
-        }
         const response = await axios.get<VacationModel>(config.urls.vacations + id);
-        return response.data;
+        const vacation = response.data;
+        vacationsStore.dispatch(addVacationAction(vacation));
+        return vacation;
     }
 
     // Add vacation to API
@@ -59,7 +56,7 @@ class VacationService {
         myFromData.append("toDate", vacation.toDate.toString());
         const response = await axios.patch<VacationModel>(config.urls.vacations + vacation.vacationId, myFromData);
         const updatedVacation = response.data;
-        vacationsStore.dispatch(addVacationAction(updatedVacation));
+        vacationsStore.dispatch(updateVacationAction(updatedVacation));
         return updatedVacation;
     }
 

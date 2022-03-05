@@ -1,6 +1,6 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
 import AuthMenu from "../../AuthArea/AuthMenu/AuthMenu";
-// import logoImage from "../../../Assets/logo.png";
+import logoImage from "../../../Assets/Images/logo.png";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authStore } from "../../../Redux/Store";
@@ -32,7 +32,7 @@ function Header(): JSX.Element {
                     <Navbar.Brand >
                         <img
                             alt=""
-                            // src={logoImage}
+                            src={logoImage}
                             width="30"
                             height="30"
                             className="d-inline-block align-top"

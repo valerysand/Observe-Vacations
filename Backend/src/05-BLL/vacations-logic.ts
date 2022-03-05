@@ -1,11 +1,8 @@
 import { OkPacket } from "mysql";
 import { v4 as uuid } from "uuid";
 import ClientError from "../03-Models/client-error";
-import FollowVacation from "../03-Models/followVacation-model";
-import UserModel from "../03-Models/user-model";
 import VacationModel from "../03-Models/vacation-model";
 import dal from "../04-DAL/dal";
-import jwt from "../01-Utils/jwt";
 import socketLogic from "./socket-logic";
 import safeDelete from "../01-Utils/safe-delete";
 
@@ -24,6 +21,9 @@ async function getOneVacation(id: number): Promise<VacationModel> {
     DATE_FORMAT(toDate, "%d-%m-%Y") AS toDate, vacationDescription, vacationImage, followers, vacationPrice from Vacations WHERE vacationId = ` + id;
     const vacations = await dal.execute(sql);
     const vacation = vacations[0];
+    socketLogic.emitAddVacation(vacation);
+    console.log("user liked vacation: " + vacation.vacationName);
+    
     if (!vacation) {
         throw new ClientError(404, `id ${id} not found`);
     }

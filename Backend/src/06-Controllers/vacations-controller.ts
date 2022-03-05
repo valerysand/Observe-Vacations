@@ -58,7 +58,7 @@ router.post("/", verifyAdmin, async (request: Request, response: Response, next:
 router.patch("/:id", verifyAdmin, async (request: Request, response: Response, next: NextFunction) => {
     try {
         const id = +request.params.id;
-        request.body.id = id;
+        request.body.vacationId = id;
         request.body.image = request.files?.image;
         const vacation = new VacationModel(request.body);
         const updateVacation = await logic.updateFullVacation(vacation);

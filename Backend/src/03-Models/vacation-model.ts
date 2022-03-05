@@ -56,14 +56,14 @@ class VacationModel {
     // Patch Validation Schema
     private static patchValidationSchema = Joi.object({
         vacationId: Joi.required(),
-        vacationName: Joi.string().required().min(10).max(50),
-        vacationDescription: Joi.string().required().min(20).max(500),
+        vacationName: Joi.string().optional().min(10).max(50),
+        vacationDescription: Joi.string().optional().min(20).max(500),
         vacationImage: Joi.forbidden(),
-        fromDate: Joi.number().required().min(2022).max(new Date().getFullYear() + 2).integer(),
-        toDate: Joi.number().required().min(2022).max(new Date().getFullYear() + 2).integer(),
-        vacationPrice: Joi.number().required(),
+        fromDate: Joi.string().optional(),
+        toDate: Joi.string().optional(),
+        vacationPrice: Joi.number().optional(),
         followers: Joi.forbidden(),
-        image: Joi.object().required()
+        image: Joi.object().optional()
 
     });
 

@@ -19,6 +19,7 @@ function initSocketIo(httpServer: HttpServer): void {
     });
 }
 
+
 function emitAddVacation(vacation: VacationModel): void {
     socketIoServer.sockets.emit("admin-add-vacation", vacation);
 }
@@ -40,6 +41,11 @@ function emitRemoveFollow(follow: FollowModel): void {
     socketIoServer.sockets.emit("user-remove-follow", follow);
 }
 
+function emitFollowedVacations(vacation: VacationModel): void {
+    socketIoServer.sockets.emit("user-followed-vacations", vacation);
+    console.log("emitFollowedVacations");
+}
+
 export default {
     initSocketIo,
     emitAddVacation, 
@@ -47,4 +53,5 @@ export default {
     emitDeleteVacation,
     emitAddFollow,
     emitRemoveFollow,
+    emitFollowedVacations
 }

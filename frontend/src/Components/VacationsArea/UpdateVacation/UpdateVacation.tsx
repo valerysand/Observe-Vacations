@@ -1,83 +1,174 @@
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useForm } from "react-hook-form";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import VacationModel from "../../../Models/VacationModel";
 import notifyService from "../../../Services/NotifyService";
 import vacationsService from "../../../Services/VacationService";
-import "./UpdateVacation.css";
+
+// MUI theme
+const theme = createTheme();
 
 function UpdateVacation(): JSX.Element {
-
     const params = useParams();
 
     const navigate = useNavigate();
     const { register, handleSubmit, formState } = useForm<VacationModel>();
 
- async function submit(vacation: VacationModel) {
-     try {
-         vacation.vacationId = +params.id;
-         await vacationsService.updateVacation(vacation);
-         notifyService.success(`Vacation ${vacation.vacationName} was updated`);
-         navigate("/home");
-     }
-     catch (err: any) {
-         notifyService.error(err);
-     }
- }
+   
+    //  On submit update the vacation
+    async function submit(vacation: VacationModel) {
+        try {
+            //  get the vacation id from the url
+            const id = +params.id;
+            vacation.vacationId = id;
+            await vacationsService.updateVacation(vacation);
+            notifyService.success(`Vacation ${vacation.vacationName} was updated`);
+            navigate("/home");
+        }
+        catch (err: any) {
+            notifyService.error(err);
+        }
+    }
+
 
     return (
-        <div className="UpdateVacation">
-            <h2>Update Vacation</h2>
+        <ThemeProvider theme={theme}>
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Box
+                    sx={{
+                        marginTop: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        background: 'rgba(255,255,255, 0.7);',
+                        padding: 2,
+                        borderRadius: 3
+                    }}
+                >
+                    <Typography component="h1" variant="h5">
+                        Update Vacation
+                    </Typography>
 
-            <form onSubmit={handleSubmit(submit)}>
-                <label>Name: </label>
-                <input type="text" {...register("vacationName", {
-                    required: { value: true, message: "Missing name" },
-                    minLength: { value: 3, message: "Name must be minimum 3 chars" },
-                    maxLength: { value: 100, message: "Name can't exceed 100 chars" }
-                })} />
-                <span>{formState.errors.vacationName?.message}</span>
-                <label>Description: </label>
-                <input type="text" {...register("vacationDescription", {
-                    required: { value: true, message: "Missing name" },
-                    minLength: { value: 3, message: "Name must be minimum 3 chars" },
-                    maxLength: { value: 100, message: "Name can't exceed 100 chars" }
-                })} />
-                <span>{formState.errors.vacationDescription?.message}</span>
+                    <Box component="form" onSubmit={handleSubmit(submit)} noValidate sx={{ mt: 1 }}>
+                        <TextField
+                            variant="standard"
+                            fullWidth
+                            helperText="Vacation Name"
+                            margin="normal"
+                            type="text"
+                            {...register("vacationName", {
+                                required: "Name is required",
+                                minLength: { value: 3, message: "Name must be minimum 3 chars" },
+                                maxLength: { value: 100, message: "Name can't exceed 100 chars" }
+                            })}
+                            {...formState.errors.vacationName && {
+                                helperText: formState.errors.vacationName.message,
+                                error: true
+                            }}
+                        />
 
-                <label>Price: </label>
-                <input type="number" {...register("vacationPrice", {
-                    required: { value: true, message: "Missing price" },
-                    min: { value: 0, message: "Price can't be negative" },
-                    max: { value: 1000, message: "Price can't exceed $1000" }
-                })} step="0.01" />
-                <span>{formState.errors.vacationPrice?.message}</span>
+                        <TextField
+                            fullWidth
+                            variant="standard"
+                            margin='normal'
+                            type="text"
+                            helperText="Vacation Description"
+                            {...register("vacationDescription", {
+                                required: { value: true, message: "Description is required" },
+                                minLength: { value: 3, message: "Name must be minimum 3 chars" },
+                                maxLength: { value: 100, message: "Name can't exceed 100 chars" }
+                            })}
+                            {...formState.errors.vacationDescription && {
+                                helperText: formState.errors.vacationDescription.message,
+                                error: true
+                            }}
+                        />
 
-                <label>From date: </label>
-                <input type="date" {...register("fromDate", {
-                    required: { value: true, message: "Missing date" },
+                        <TextField
+                            fullWidth
+                            margin='normal'
+                            type="number"
+                            helperText="Vacation Price"
+                            variant='standard'
+                            {...register("vacationPrice", {
+                                required: { value: true, message: "Price is required" },
+                                min: { value: 0, message: "Price can't be negative" },
+                                max: { value: 1000, message: "Price can't exceed $1000" }
+                            })}
+                            {...formState.errors.vacationPrice && {
+                                helperText: formState.errors.vacationPrice.message,
+                                error: true
+                            }}
+                        />
 
-                })} />
-                <span>{formState.errors.fromDate?.message}</span>
+                        <TextField
+                            margin='normal'
+                            variant='standard'
+                            fullWidth
+                            type="date"
+                            helperText="From Date"
+                            {...register("fromDate", {
+                                required: { value: true, message: "From date is required" },
 
-                <label>To date: </label>
-                <input type="date" {...register("toDate", {
-                    required: { value: true, message: "Missing date" },
+                            })}
+                            {...formState.errors.fromDate && {
+                                helperText: formState.errors.fromDate.message,
+                                error: true
+                            }}
+                        />
 
-                })} />
-                <span>{formState.errors.toDate?.message}</span>
+                        <TextField
+                            fullWidth
+                            margin='normal'
+                            variant='standard'
+                            helperText="To Date"
+                            type="date"
+                            {...register("toDate", {
+                                required: { value: true, message: "Missing date" },
 
-                <label>Image:</label>
-                <input type="file" accept="image/*" {...register("image", {
-                    required: { value: true, message: "Missing image" }
-                })} />
-                <span>{formState.errors.image?.message}</span>
+                            })}
+                            {...formState.errors.toDate && {
+                                helperText: formState.errors.toDate.message,
+                                error: true
+                            }}
+                        />
 
-                <button>Update</button>
+                        <TextField
+                            fullWidth
+                            margin='normal'
+                            variant='standard'
+                            helperText="Image"
+                            type="file"
+                            inputProps={{ accept: "image/*" }}
+                            {...register("image", {
+                                required: { value: true, message: "Missing image" }
+                            })}
+                            {...formState.errors.image && {
+                                helperText: formState.errors.image.message,
+                                error: true
+                            }}
 
-                <button><NavLink to="/home">Back</NavLink></button>
+                        />
 
-            </form>
-        </div>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+
+                        >Update</Button>
+                        <Button><NavLink to="/home">Back</NavLink></Button>
+
+                    </Box>
+                </Box>
+            </Container>
+        </ThemeProvider>
     );
 }
 

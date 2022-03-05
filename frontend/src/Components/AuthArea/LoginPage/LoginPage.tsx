@@ -1,4 +1,3 @@
-import "./LoginPage.css";
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -12,17 +11,24 @@ import CredentialModel from "../../../Models/CredentialModel";
 import authService from "../../../Services/AuthService";
 import { useForm } from "react-hook-form";
 import notifyService from "../../../Services/NotifyService";
+import { useEffect, useState } from 'react';
+import UserModel from '../../../Models/UserModel';
 
 
 const theme = createTheme();
 
 export default function SignIn() {
-
+    const [users, setUsers] = useState<UserModel[]>([]);
     const navigator = useNavigate();
-    const { register, handleSubmit } = useForm<CredentialModel>();
+    const { register, handleSubmit, formState } = useForm<CredentialModel>();
 
+    useEffect((async () => {
+        // Get all users
+        const users = await authService.getAllUsers();
+        setUsers(users);
+    }) as any, []);
 
-
+    // Submit the form
     async function submit(credentials: CredentialModel) {
         try {
             await authService.login(credentials);
@@ -35,6 +41,7 @@ export default function SignIn() {
         }
 
     }
+
 
     return (
         <ThemeProvider theme={theme}>
@@ -63,9 +70,25 @@ export default function SignIn() {
                             name="login"
                             autoComplete="login"
                             autoFocus
-                            {...register("username")}
+                            {...register("username", {
+                                required: "Login is required",
+                                minLength: { value: 3, message: "Login must be at least 3 characters" },
+                                maxLength: { value: 20, message: "Login must be at most 20 characters" },
+                                validate: (value) => {
+                                    // Check if username valid
+                                    if (value === users.find(user => user.username === value)?.username) {
+                                        return true;
+                                    }
+                                    return "Login is not valid";
+                                }
+                            })}
+                            {...formState.errors.username && {
+                                helperText: formState.errors.username?.message,
+                                error: true,
+                            }}
                         />
                         <TextField
+                            
                             margin="normal"
                             required
                             fullWidth
@@ -74,7 +97,22 @@ export default function SignIn() {
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            {...register("password")}
+                            {...register("password", {
+                                required: "Password is required",
+                                minLength: { value: 5, message: "Password must be at least 5 characters" },
+                                maxLength: { value: 20, message: "Password must be at most 20 characters" },
+                                validate: (value) => {
+                                    // Check if password valid
+                                    if (value === users.find(user => user.password === value)?.password) {
+                                        return true;
+                                    }
+                                    return "Password is not valid";
+                                }
+                            })}
+                            {...formState.errors.password && {
+                                helperText: formState.errors.password?.message,
+                                error: true,
+                            }}
                         />
                         <Button
                             onClick={handleSubmit(submit)}
@@ -93,7 +131,6 @@ export default function SignIn() {
                     </Box>
                 </Box>
             </Container>
-            
         </ThemeProvider>
     );
 }

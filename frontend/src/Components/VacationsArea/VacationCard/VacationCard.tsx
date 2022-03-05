@@ -10,12 +10,13 @@ import ClearIcon from '@mui/icons-material/Clear';
 import VacationModel from '../../../Models/VacationModel';
 import config from '../../../Utils/Config';
 import { useNavigate } from 'react-router-dom';
-import {  vacationsStore } from '../../../Redux/Store';
+import { vacationsStore } from '../../../Redux/Store';
 import vacationsService from '../../../Services/VacationService';
 import { deleteVacationAction } from '../../../Redux/VacationsState';
 import UserModel from '../../../Models/UserModel';
 import Role from '../../../Models/Role';
 import Follow from '../../SharedArea/Follow/Follow';
+import notifyService from '../../../Services/NotifyService';
 
 
 
@@ -24,37 +25,33 @@ interface VacationCardProps {
     user: UserModel;
 }
 
-// MUI Theme
 
- function VacationCard(props: VacationCardProps):JSX.Element {
+function VacationCard(props: VacationCardProps): JSX.Element {
+
 
     const navigator = useNavigate();
-
+    // Delete vacation
     async function handleDelete(vacationId: number) {
         try {
             // ask the user if he really wants to delete the vacation
-            window.confirm('Are you sure you want to delete this vacation?');
-            if(window.confirm('Are you sure you want to delete this vacation?')) {
+            const answer: boolean = window.confirm('Are you sure you want to delete this vacation?');
+            if (!answer) return;
             // delete vacation from the server
             await vacationsService.deleteVacation(vacationId);
             // delete vacation from redux
             vacationsStore.dispatch(deleteVacationAction(vacationId));
-            alert("Vacation deleted");
-            }
-            else {
-                alert("Vacation not deleted");
-            }
+            notifyService.success("Vacation deleted");
         }
         catch (err: any) {
-            alert(err.message);
+            notifyService.error(err.message);
         }
     }
 
     return (
         <Card sx={{
             maxWidth: 445,
-            maxHeight: 420,
-            height: 390,
+            maxHeight: 450,
+            height: 440,
             borderRadius: 3,
             background: "rgba(255, 255, 255, 0.8)",
 
@@ -70,8 +67,12 @@ interface VacationCardProps {
                 alt={props.vacation.vacationName}
             />
             <CardContent>
-                <Typography variant="body1" color="dark">
+                <Typography variant="subtitle1" color="dark">
                     {props.vacation.vacationName}
+                </Typography>
+                <Typography variant="subtitle2" color="dark">
+
+                    {props.vacation.vacationDescription}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     Price: {props.vacation.vacationPrice}$
@@ -85,12 +86,16 @@ interface VacationCardProps {
             </CardContent>
             {props.user?.role === Role.Admin ?
                 <CardActions disableSpacing>
-                    <IconButton aria-label="edit" onClick={() => navigator("/update-vacation/" + props.vacation?.vacationId)}>
+                    <IconButton aria-label="edit"
+                        aria-haspopup="true"
+                        onClick={() => navigator("/update-vacation/" + props.vacation?.vacationId)}>
                         <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => { handleDelete(props.vacation?.vacationId) }}>
+                    <IconButton
+                        onClick={() => { handleDelete(props.vacation?.vacationId) }}>
                         <ClearIcon />
                     </IconButton>
+
                 </CardActions>
                 :
                 <Follow vacationId={props.vacation?.vacationId} />
