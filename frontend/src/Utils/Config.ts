@@ -21,20 +21,20 @@ abstract class Config {
             users: baseUrl + "auth/users/",
             addFollow: baseUrl + "follows/add/",
             removeFollow: baseUrl + "follows/remove/",
-            socketServer: "http://localhost:3002"
+            socketServer: "http://localhost:3001"
         }
     }
 }
 
 class DevelopmentConfig extends Config {
     public constructor() {
-        super("http://localhost:3002/api/");
+        super("http://localhost:3001/api/");
     }
 }
 
 class ProductionConfig extends Config {
     public constructor() {
-        super("http://localhost:3001/api/");
+        super("https://observe-vacations-by-valery.herokuapp.com/api/");
     }
 }
 
