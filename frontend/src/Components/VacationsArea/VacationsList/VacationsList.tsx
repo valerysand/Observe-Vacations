@@ -1,16 +1,13 @@
 import { vacationsStore, authStore, followStore } from "../../../Redux/Store";
-import authService from "../../../Services/AuthService";
 import vacationsService from "../../../Services/VacationService";
 import Loading from "../../SharedArea/Loading/Loading";
 import VacationCard from "../VacationCard/VacationCard";
 import "./VacationsList.css";
 import { Grid } from "@mui/material";
 import notifyService from "../../../Services/NotifyService";
-import UserModel from "../../../Models/UserModel";
 import VacationModel from "../../../Models/VacationModel";
 import { useEffect, useState } from "react";
 import { fetchFollowedVacationsAction, fetchVacationsAction } from "../../../Redux/VacationsState";
-import followService from "../../../Services/FollowService";
 
 
 

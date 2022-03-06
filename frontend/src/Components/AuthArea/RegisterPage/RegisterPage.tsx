@@ -1,4 +1,3 @@
-import "./RegisterPage.css";
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -52,7 +51,7 @@ export default function SignUp() {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        background: 'rgba(255,255,255, 0.7);',
+                        background: 'rgba(255,255,255, 0.9);',
                         padding: 2,
                         borderRadius: 3
                     }}

@@ -2,7 +2,6 @@ import express, { NextFunction, Request, Response } from "express";
 import VacationModel from "../03-Models/vacation-model";
 import logic from "../05-BLL/vacations-logic";
 import path from "path";
-import verifyToken from "../02-Middleware/verify-token";
 import verifyAdmin from "../02-Middleware/verify-admin";
 import jwt from "../01-Utils/jwt";
 

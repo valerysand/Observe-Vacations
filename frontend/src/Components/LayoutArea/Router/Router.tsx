@@ -3,14 +3,12 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Unsubscribe } from "redux";
 import Role from "../../../Models/Role";
 import { authStore } from "../../../Redux/Store";
-import authService from "../../../Services/AuthService";
 import SignIn from "../../AuthArea/LoginPage/LoginPage";
 import Logout from "../../AuthArea/Logout/Logout";
 import SignUp from "../../AuthArea/RegisterPage/RegisterPage";
 import AddVacation from "../../VacationsArea/AddVacation/AddVacation";
 import Chart from "../../VacationsArea/Chart/Chart";
 import UpdateVacation from "../../VacationsArea/UpdateVacation/UpdateVacation";
-
 import VacationsList from "../../VacationsArea/VacationsList/VacationsList";
 import Page404 from "../Page404/Page404";
 

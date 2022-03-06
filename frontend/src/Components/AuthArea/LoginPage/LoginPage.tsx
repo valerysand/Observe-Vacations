@@ -53,7 +53,7 @@ export default function SignIn() {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        background: 'rgba(255,255,255, 0.7);',
+                        background: 'rgba(255,255,255, 0.9);',
                         padding: 2,
                         borderRadius: 3
                     }}

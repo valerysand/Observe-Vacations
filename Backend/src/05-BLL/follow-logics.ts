@@ -1,5 +1,4 @@
 import { OkPacket } from "mysql";
-import ClientError from "../03-Models/client-error";
 import FollowModel from "../03-Models/followVacation-model";
 import dal from "../04-DAL/dal";
 import socketLogic from "./socket-logic";
@@ -8,7 +7,7 @@ import socketLogic from "./socket-logic";
 
 // Add follow vacation
 async function addFollow(vacationToFollow: FollowModel): Promise<FollowModel> {
-    const sql = `INSERT INTO savedVacations(userId, vacationId)
+    const sql = `INSERT INTO follows(userId, vacationId)
                 VALUES(${vacationToFollow.userId}, ${vacationToFollow.vacationId})`;
     const result: OkPacket = await dal.execute(sql);
 
@@ -24,7 +23,7 @@ async function addFollow(vacationToFollow: FollowModel): Promise<FollowModel> {
 // Remove follow 
 async function removeFollow(follow: FollowModel): Promise<void> {
     // remove follower from followers table
-    const sqlFollowerTable = `DELETE FROM savedVacations 
+    const sqlFollowerTable = `DELETE FROM follows 
       WHERE vacationId=${follow.vacationId} 
       AND userId=${follow.userId}`;
     const results: OkPacket = await dal.execute(sqlFollowerTable);

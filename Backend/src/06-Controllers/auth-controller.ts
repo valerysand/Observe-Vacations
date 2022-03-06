@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, response, Response } from "express";
+import express, { NextFunction, Request,  Response } from "express";
 import CredentialsModel from "../03-Models/credentials-model";
 import UserModel from "../03-Models/user-model";
 import logic from "../05-BLL/auth-logic";

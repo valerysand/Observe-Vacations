@@ -43,7 +43,7 @@ class VacationModel {
     private static putValidationSchema = Joi.object({
         vacationId: Joi.number().required().positive().integer(),
         vacationDestination: Joi.string().required().min(5).max(50),
-        vacationDescription: Joi.string().required().min(20).max(500),
+        vacationDescription: Joi.string().required().min(10).max(500),
         vacationImage: Joi.forbidden(),
         fromDate: Joi.string().required().min(4).max(100),
         toDate: Joi.string().required().min(4).max(100),
@@ -57,7 +57,7 @@ class VacationModel {
     private static patchValidationSchema = Joi.object({
         vacationId: Joi.required(),
         vacationDestination: Joi.string().optional().min(5).max(50),
-        vacationDescription: Joi.string().optional().min(20).max(500),
+        vacationDescription: Joi.string().optional().min(10).max(500),
         vacationImage: Joi.forbidden(),
         fromDate: Joi.string().optional(),
         toDate: Joi.string().optional(),

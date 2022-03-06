@@ -102,13 +102,14 @@ async function updateFullVacation(vacation: VacationModel): Promise<VacationMode
 
 // Delete vacation from database:
 async function deleteVacation(id: number): Promise<void> {
-    const dbVacations = getAllVacations();
-    const index = (await dbVacations).findIndex(v => v.vacationId === id);
-    if (index === -1) {
-        throw new ClientError(404, `id ${id} not found`)
+    const vacation = await getOneVacation(id);
+    if (!vacation) {
+        throw new ClientError(404, `id ${id} not found`);
     }
     const sql = "DELETE FROM vacations WHERE vacationId = " + id;
     const info: OkPacket = await dal.execute(sql);
+    // delete the image from disk:
+    safeDelete("./src/Assets/Images/Vacations/" + vacation.vacationImage);
     socketLogic.emitDeleteVacation(id);
 }
 
@@ -118,7 +119,7 @@ async function getAllFollowedVacations(userId: number): Promise<VacationModel[]>
                     DATE_FORMAT(fromDate, "%Y-%m-%d") AS fromDate, 
                     DATE_FORMAT(toDate, "%Y-%m-%d") AS toDate, vacationDescription, vacationImage, vacationDestination, followers, vacationPrice 
                     FROM Vacations 
-                    JOIN savedVacations on Vacations.vacationId = savedVacations.vacationId 
+                    JOIN follows on Vacations.vacationId = follows.vacationId 
                     WHERE userId = ${userId}`;
     const allFollowedVacations = await dal.execute(sql);
     return allFollowedVacations;

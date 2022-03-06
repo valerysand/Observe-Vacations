@@ -9,7 +9,6 @@ import authService from "../../../Services/AuthService";
 import followService from "../../../Services/FollowService";
 import notifyService from "../../../Services/NotifyService";
 import vacationsService from "../../../Services/VacationService";
-import { FavoriteOutlined } from "@material-ui/icons";
 
 
 interface FollowProps {
@@ -20,7 +19,7 @@ interface FollowProps {
 function Follow(props: FollowProps): JSX.Element {
 
     const [isFollow, setIsFollow] = useState<boolean>(false);
-
+    
     useEffect((async () => {
         try {
             let unsubscribe: Unsubscribe;

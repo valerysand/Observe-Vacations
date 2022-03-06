@@ -10,7 +10,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import VacationModel from "../../../Models/VacationModel";
 import notifyService from "../../../Services/NotifyService";
 import vacationsService from "../../../Services/VacationService";
-import "./AddVacation.css";
 
 // MUI theme
 const theme = createTheme();

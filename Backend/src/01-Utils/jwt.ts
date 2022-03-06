@@ -14,7 +14,7 @@ function getNewToken(user: UserModel): string {
 function verifyToken(request: Request): Promise<boolean> {
     return new Promise((resolve, reject) => {
         try {
-            // If missing authirization header:
+            // If missing authorization header:
             if (!request.headers.authorization) {
                 resolve(false);
                 return;
@@ -45,7 +45,7 @@ function verifyToken(request: Request): Promise<boolean> {
 function getUserFromToken(request: Request): UserModel {
     // Get the token from the request:
     const token = request.headers.authorization.substring(7);
-    // Extract the pauload:
+    // Extract the payload:
     const payload = jwt.decode(token);
     // Extract the user from the payload:
     const user = (payload as any).user;
